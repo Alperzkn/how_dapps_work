@@ -8,7 +8,7 @@ const meta: LessonMeta = {
     en: 'A lottery where every ticket costs electricity decides who writes the next block.',
     tr: 'Sıradaki "block"\'u kimin yazacağına, her bileti elektrikle ödenen bir çekiliş karar verir.',
   },
-  steps: ['who', 'puzzle', 'race', 'broadcast', 'retarget', 'attack'],
+  steps: ['who', 'puzzle', 'race', 'odds', 'broadcast', 'retarget', 'attack'],
 };
 
 export default meta;

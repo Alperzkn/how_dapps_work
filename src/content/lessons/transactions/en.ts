@@ -5,12 +5,10 @@ const content: LessonContent = {
     alice: "Alice's wallet",
     keyStays: 'the key stays here',
     privateKey: 'private key',
-    privateKeyNote: '256-bit secret',
     publicKey: 'public key',
     verify: 'signature is valid',
     address: 'address',
     transaction: 'transaction',
-    txSummary: 'to Bob · 1 ETH',
     signature: 'signature',
     signedTx: 'signed transaction',
     firstNode: 'first node (RPC)',
@@ -22,29 +20,74 @@ const content: LessonContent = {
     tip: 'tip',
     newBlock: 'new block',
     producer: 'block producer',
-    burned: 'base fee: burned',
-    tipTo: 'tip → producer',
+    burnShort: 'burned',
+    tipShort: 'tip',
     confirmation: 'confirmation',
     confirmations: 'confirmations',
     bob: 'Bob',
+    newWallet: 'Generate a new wallet',
+    demoWarning: 'Demo keys, made in your browser. Never send real funds to them.',
+    demoShort: 'demo only',
+    defaultMessage: 'send 1 ETH to Bob',
+    messageLabel: 'Message to sign',
+    signAgain: 'Sign again',
+    signed: 'Signed',
+    useBobKey: "Check with Bob's public key",
+    result: 'Check',
+    valid: 'valid',
+    invalid: 'invalid',
+    verifyFail: 'signature does not match',
+    bobKey: "Bob's public key",
+    edited: 'changed after signing',
+    pickNode: 'Wallet sends it to node',
+    hopsAll: 'Hops until every node has it',
+    hopN: 'hop {n}',
+    firstShort: 'hears it first',
+    tipLabel: "Alice's tip",
+    baseLabel: 'Base fee',
+    effLabel: 'Tip she really pays',
+    posLabel: 'Place in the queue',
+    nextLabel: 'Fits in the next block',
+    yes: 'yes',
+    no: 'no',
+    cannot: 'max fee < base fee',
+    nextBlock: 'next block: room for 3',
+    produce: 'Produce next block',
+    restart: 'Start over',
+    emptyPool: 'Mempool is empty',
+    maxReached: 'Six confirmations reached',
+    txStatus: "Alice's transaction",
+    inBlock: 'in block #{n}',
+    waiting: 'still waiting',
+    waits: 'waits',
+    feePaid: 'Fee paid',
+    confLabel: 'Confirmations',
+    btcRule: 'Usual Bitcoin wait (6)',
+    btcTime: 'At Bitcoin pace',
+    minutes: 'min',
+    bobWaiting: 'waiting',
   },
   steps: {
     keys: {
       title: 'A wallet is a pair of keys',
-      alt: "Alice's wallet stands behind a glowing key. An arrow leads from the key to a padlock and another from the padlock to a name plate: private key, public key, address.",
+      alt: "Alice's wallet stands behind a glowing key. An arrow leads from the key to a padlock and another from the padlock to a name plate: private key, public key, address. The name plate shows the start and end of a real address derived from the key.",
       body: {
         beginner: `A [[wallet]] does not hold coins. The coins are lines in the shared [[ledger]]. What the wallet holds is a secret that proves those lines are yours.
 
 That secret is the [[private-key]]: think of it as the only key to your mailbox. From it the wallet works out a [[public-key]], which is like the lock, and from that an [[address]], which is like the mailbox number you give to people so they can pay you.
 
-The arrows only go one way. Anyone may see your address; nobody can work backwards from it to your key. Lose the private key and the coins are stuck forever. Leak it and they are someone else's.`,
+The arrows only go one way. Anyone may see your address; nobody can work backwards from it to your key. Lose the private key and the coins are stuck forever. Leak it and they are someone else's.
+
+**Try it:** press **Generate a new wallet** under the scene. A fresh secret key is drawn at random, then the lock and the address are worked out from it, always in that order. These are real keys made in your browser for practice only: never send real money to them.`,
         intermediate: `A [[wallet]] is software or a device that stores keys and signs with them. Balances live on the chain, under an [[address]].
 
 - The [[private-key]] is a random 256-bit number.
 - The [[public-key]] is computed from it. Going the other way is not feasible.
 - The [[address]] is a short form of the public key: 20 bytes on Ethereum, written as \`0x\` followed by 40 hex characters.
 
-Most wallets do not make you back up each key. They generate one [[seed-phrase]] of 12 or 24 words and derive every key from it, so those words are the real secret. There is no "forgot my password" link, because nobody else has a copy.`,
+Most wallets do not make you back up each key. They generate one [[seed-phrase]] of 12 or 24 words and derive every key from it, so those words are the real secret. There is no "forgot my password" link, because nobody else has a copy.
+
+**Try it:** **Generate a new wallet** draws a new random [[private-key]] in your browser and derives the real [[public-key]] and Ethereum [[address]] from it; the panel shows the start and end of each. They are demo keys. A key that has appeared on a screen is no longer a secret, so never use one for real funds.`,
         expert: `Bitcoin and Ethereum both use the elliptic curve secp256k1 (\`y² = x³ + 7\` over a 256-bit prime field) with a base point \`G\` of prime order \`n\`.
 
 - [[private-key]]: an integer \`d\` with \`1 ≤ d < n\`.
@@ -53,7 +96,9 @@ Most wallets do not make you back up each key. They generate one [[seed-phrase]]
 
 A [[seed-phrase]] follows BIP-39: 128 to 256 bits of entropy plus a checksum, mapped to words from a list of 2048, then stretched with PBKDF2-HMAC-SHA512 (2048 rounds) into a 512-bit seed. BIP-32 derives a tree of keys from that seed; the usual first Ethereum account is at path \`m/44'/60'/0'/0/0\`.
 
-All of this describes an externally owned account. A [[smart-contract]] account has an address but no private key.`,
+All of this describes an externally owned account. A [[smart-contract]] account has an address but no private key.
+
+The button under the scene runs real secp256k1 code: it picks a random \`d\`, computes \`Q = d·G\` and takes \`keccak256(X ‖ Y)[12:]\` as the [[address]]. Import that private key into any Ethereum wallet and you get the same address, which is exactly why a key that has been displayed must never hold funds.`,
       },
       code: {
         lang: 'JavaScript (ethers v6)',
@@ -70,13 +115,15 @@ getAddress(dataSlice(hash, 12));           // last 20 bytes == wallet.address`,
     },
     sign: {
       title: 'Signing a transaction',
-      alt: 'A transaction form lies in front of the wallet. The key presses a seal onto it, and the padlock beside it shows a green light: the signature checks out.',
+      alt: 'A transaction form lies in front of the wallet. The key presses a seal onto it, and the padlock beside it shows a green light: the signature checks out. If the text is changed after signing, or the wrong public key is used, the seal breaks and the light turns red.',
       body: {
         beginner: `To pay Bob, Alice's wallet fills in a short form: who gets the money and how much. That form is a [[transaction]].
 
 Then the wallet stamps it with her [[private-key]]. The stamp is a [[digital-signature]]. It works like a wax seal pressed with a ring only Alice owns, with one improvement: the seal is made for *this exact form*. Change one digit and the seal no longer fits, and it cannot be lifted off and stuck onto another form.
 
-Anyone can check the seal using Alice's [[public-key]]. Nobody can make one without her private key. The key never leaves the wallet; only the sealed form does.`,
+Anyone can check the seal using Alice's [[public-key]]. Nobody can make one without her private key. The key never leaves the wallet; only the sealed form does.
+
+**Try it:** the box under the scene holds the text of the form, already sealed. Change a single character and the seal breaks, because it was made for the old text. Press **Sign again** to make a new one. Then tick **Check with Bob's public key**: even a perfect seal fails against the wrong person's key.`,
         intermediate: `A [[transaction]] is a small signed message. On Ethereum it says:
 
 - **to**: the receiving [[address]];
@@ -86,7 +133,9 @@ Anyone can check the seal using Alice's [[public-key]]. Nobody can make one with
 
 The wallet hashes these fields and signs the [[hash]] with the [[private-key]]. The [[digital-signature]] proves two things: the holder of that key approved the message, and nothing in it was changed afterwards.
 
-The [[account-nonce]] is the number of transactions this account has already sent. Each new one must use the next number: 0, 1, 2 and so on. That fixes their order and stops anyone from copying a signed payment and submitting it a second time.`,
+The [[account-nonce]] is the number of transactions this account has already sent. Each new one must use the next number: 0, 1, 2 and so on. That fixes their order and stops anyone from copying a signed payment and submitting it a second time.
+
+**Try it** below. The text is hashed and signed for real with the key from the previous step. Edit it and the check fails until you sign again; \`r\` and \`s\` then come out completely different, even for a one-letter change. Checking with Bob's [[public-key]] fails as well, because a signature only matches the key pair that made it. (The demo signs a line of text; a real wallet signs the hash of the fields listed above.)`,
         expert: `An [[eip-1559]] transaction (type \`0x02\`) carries \`chainId, nonce, maxPriorityFeePerGas, maxFeePerGas, gasLimit, to, value, data, accessList\` and the signature \`yParity, r, s\`. The signed digest is \`h = keccak256(0x02 ‖ rlp([chainId, …, accessList]))\`.
 
 [[ecdsa]] signing with private key \`d\`: pick a secret number \`k\`, compute \`R = k·G\`, then \`r = R.x mod n\` and \`s = k⁻¹(h + r·d) mod n\`. Verification computes \`R' = (h·s⁻¹)·G + (r·s⁻¹)·Q\` and accepts if \`R'.x ≡ r (mod n)\`.
@@ -98,7 +147,9 @@ Details that matter:
 - \`(r, n − s)\` is a valid signature too, so Ethereum accepts only \`s ≤ n/2\` (EIP-2). Otherwise a third party could alter the transaction hash.
 - \`chainId\` is part of the digest (replay protection introduced by EIP-155), so a signature cannot be replayed on another chain.
 
-The [[account-nonce]] must equal the sender's nonce in state at the moment the transaction executes. A lower one is rejected; a higher one has to wait.`,
+The [[account-nonce]] must equal the sender's nonce in state at the moment the transaction executes. A lower one is rejected; a higher one has to wait.
+
+The panel signs \`keccak256(text)\` with [[ecdsa]] over secp256k1 using the current demo key (deterministic \`k\`, low \`s\`) and then runs real verification against the text now in the box and the selected public key. Signing the same text twice gives the same \`(r, s)\`; any edit changes \`h\`, and verification fails. A real transaction is signed the same way, with \`h\` computed over the RLP-encoded fields instead of a text string.`,
       },
       code: {
         lang: 'EIP-1559 transaction (type 0x02)',
@@ -118,13 +169,15 @@ The [[account-nonce]] must equal the sender's nonce in state at the moment the t
     },
     broadcast: {
       title: 'Broadcasting to the network',
-      alt: "The signed transaction leaves Alice's wallet as a small parcel, hops to a first node, and that node passes copies on to the nodes next to it. The key stays behind in the wallet.",
+      alt: "The signed transaction leaves Alice's wallet as a small parcel, hops to the node the wallet is connected to, and that node passes copies on to its neighbours until all four have it. The key stays behind in the wallet.",
       body: {
         beginner: `The sealed form now has to reach the people who keep the [[ledger]]. The wallet hands it to one computer on the network, a [[node]].
 
 That node checks the seal. If it is good, it tells the nodes it is connected to; they check and tell theirs. Within a second or two, computers all over the world have heard about Alice's payment.
 
-Notice what travelled: the signed [[transaction]] and nothing else. The [[private-key]] stayed in the wallet. That is why you can send a payment through computers you do not trust.`,
+Notice what travelled: the signed [[transaction]] and nothing else. The [[private-key]] stayed in the wallet. That is why you can send a payment through computers you do not trust.
+
+**Try it:** pick which computer Alice's wallet talks to, A to D. The news starts there and still reaches every other computer a hop or two later, whichever one you choose.`,
         intermediate: `A [[wallet]] is usually not a [[node]] itself. It sends the signed [[transaction]] to a node through an interface called [[rpc]]; which node that is depends on the wallet's network settings.
 
 That first node runs basic checks before accepting anything:
@@ -135,14 +188,18 @@ That first node runs basic checks before accepting anything:
 
 If so, it stores the transaction and announces it to its peers, which repeat the same checks and pass it on. This way of spreading news is called [[gossip]].
 
-Nothing has changed on the [[ledger]] yet. The network knows about the transaction, but it is not in a [[block]].`,
+Nothing has changed on the [[ledger]] yet. The network knows about the transaction, but it is not in a [[block]].
+
+**Try it:** choose the [[node]] the wallet sends to. The transaction reaches every node either way; only the number of hops changes. A real network has thousands of nodes, each connected to many others, so a handful of hops covers all of it.`,
         expert: `The wallet submits the raw signed bytes with the [[json-rpc]] method \`eth_sendRawTransaction\`, which returns the transaction hash: \`keccak256\` of the full signed encoding. The hash is known before inclusion; a receipt exists only afterwards.
 
 On Ethereum's execution layer, transactions spread over devp2p (the \`eth\` protocol). A node sends the full transaction to a small subset of its peers and announces only the hash to the rest with \`NewPooledTransactionHashes\`; a peer that lacks it asks with \`GetPooledTransactions\`. Bitcoin announces every transaction with \`inv\`; a peer that lacks it replies \`getdata\` and receives the \`tx\` message.
 
 Checks before a node admits and relays a transaction: the encoding is well formed, the signature recovers, \`nonce ≥\` the account nonce, \`balance ≥ gasLimit × maxFeePerGas + value\`, \`gasLimit ≥\` the intrinsic [[gas]] (21000 for a plain transfer), and the fee meets the node's own minimum.
 
-A transaction in the public pool is visible to everyone before it executes. That is what makes front-running and sandwich attacks possible, and why some users send to a private relay or straight to block builders instead.`,
+A transaction in the public pool is visible to everyone before it executes. That is what makes front-running and sandwich attacks possible, and why some users send to a private relay or straight to block builders instead.
+
+The selector moves the entry point of the flood. How long it takes is set by how far the farthest node is from that entry point: 2 hops from A or B, 3 from C or D in this four-node graph. In a random graph of *n* nodes with *d* peers each, the diameter grows like \`log n / log d\`, which is why [[gossip]] covers a global network in a few hops.`,
       },
       code: {
         lang: 'JSON-RPC',
@@ -157,13 +214,15 @@ A transaction in the public pool is visible to everyone before it executes. That
     },
     mempool: {
       title: 'Waiting in the mempool',
-      alt: "An open tray holds six waiting transactions in a row, each on a stand whose height is the tip it offers. Alice's transaction glows in third place.",
+      alt: "An open tray holds six waiting transactions in a row, each on a stand whose height is the tip it offers. Alice's transaction glows in third place, and the first three places are marked as fitting into the next block.",
       body: {
         beginner: `Alice's payment is not in the [[ledger]] yet. It sits in a waiting room together with everyone else's. That waiting room is the [[mempool]].
 
 Each new [[block]] has limited space, so not everybody gets in at once. Every [[transaction]] offers a small fee, and the ones offering more are picked first, like a queue where a bigger tip moves you forward.
 
-When the network is quiet, a small fee gets you in right away. When it is busy, you pay more or wait longer.`,
+When the network is quiet, a small fee gets you in right away. When it is busy, you pay more or wait longer.
+
+**Try it:** raise or lower Alice's tip with the first slider and watch her move along the queue. Only the first three fit into the next block. The second slider changes the entry price that everybody pays; push it above the most Alice agreed to pay, and she cannot get in at all.`,
         intermediate: `Each [[node]] keeps its own [[mempool]]: the valid [[transaction|transactions]] it has heard of that are not in a [[block]] yet. There is no single official list, and two nodes may hold slightly different sets.
 
 Work on Ethereum is measured in [[gas]]. A plain transfer uses 21,000 gas. The [[gas-fee]] is the gas used times a price per unit, quoted in gwei (a billionth of an ETH). Since [[eip-1559]] that price has two parts:
@@ -171,7 +230,9 @@ Work on Ethereum is measured in [[gas]]. A plain transfer uses 21,000 gas. The [
 - a **base fee** set by the protocol, which rises when blocks are full and falls when they are not;
 - a **tip** that goes to whoever builds the block.
 
-Block builders sort by tip, so a higher tip means a shorter wait. A transaction stuck with too low a fee can be replaced: sign a new one with the **same** [[account-nonce]] and a higher fee, and only one of the two can ever be included.`,
+Block builders sort by tip, so a higher tip means a shorter wait. A transaction stuck with too low a fee can be replaced: sign a new one with the **same** [[account-nonce]] and a higher fee, and only one of the two can ever be included.
+
+**Try it.** Alice's transaction allows at most 30 gwei per unit of gas in total. Move her tip and she changes places; three transactions fit into the next block here. Raise the base fee towards 30 and the tip she really pays shrinks, because base fee plus tip may not exceed her limit. Above 30 she has to wait for the base fee to fall.`,
         expert: `A [[mempool]] is local policy, not [[consensus]]. Each node decides what to keep, how much, and what to evict; Bitcoin Core defaults to 300 MB and a 14-day expiry.
 
 [[eip-1559]] pricing, per unit of [[gas]]:
@@ -182,7 +243,9 @@ Block builders sort by tip, so a higher tip means a shorter wait. A transaction 
 
 Nonce rules shape the pool. Geth keeps *pending* transactions (executable now) apart from *queued* ones (there is a gap in the [[account-nonce]] sequence); a queued transaction cannot run until the gap is filled. A replacement with the same nonce must raise both fee fields by at least 10% under Geth's default settings.
 
-Ordering is the builder's choice. Sorting by effective tip is the simple strategy; in practice most Ethereum blocks come from specialised builders that order transactions to capture MEV and bid for the proposer's slot.`,
+Ordering is the builder's choice. Sorting by effective tip is the simple strategy; in practice most Ethereum blocks come from specialised builders that order transactions to capture MEV and bid for the proposer's slot.
+
+The sliders set Alice's \`maxPriorityFeePerGas\` and the block's \`baseFeePerGas\`; her \`maxFeePerGas\` is fixed at 30 gwei. The scene uses the simple strategy: sort by effective tip, break ties in favour of the transaction seen first, and take three per block. The five other transactions are assumed to have ceilings high enough to stay includable.`,
       },
       code: {
         lang: 'Python (EIP-1559 base fee)',
@@ -201,13 +264,15 @@ def next_base_fee(base_fee, gas_used, gas_limit):
     },
     included: {
       title: 'Into a block',
-      alt: "The three transactions with the highest tips, Alice's among them, have moved from the tray onto a new block at the end of the chain. A block producer stands next to it; the other transactions stay in the tray for the next block.",
+      alt: "The three transactions with the highest tips (Alice's among them, unless her tip was lowered) have moved from the tray onto a new block at the end of the chain. A block producer stands next to it; the other transactions stay in the tray for the next block.",
       body: {
         beginner: `Every so often, one participant gets to write the next page of the [[ledger]]. They pick [[transaction|transactions]] from the waiting room, best fees first, and pack them into a new [[block]].
 
 Alice's payment made it in. The block is sent to everyone, each [[node]] checks it, and each one updates its copy: Alice's balance goes down, Bob's goes up.
 
-The fee Alice paid is the price of that space in the block. The payments that did not fit stay in the waiting room and try again next time.`,
+The fee Alice paid is the price of that space in the block. The payments that did not fit stay in the waiting room and try again next time.
+
+**Try it:** press **Produce next block** and the next three are taken. If you gave Alice a small tip in the previous step, this is the block she gets into. Go back, change her tip and see where she lands.`,
         intermediate: `A block producer (a [[miner]] on Bitcoin, a [[validator]] on Ethereum) selects [[transaction|transactions]] from its [[mempool]], runs them in order and publishes the resulting [[block]]. Ethereum produces one every 12 seconds, Bitcoin about every 10 minutes.
 
 Running Alice's transaction does three things at once:
@@ -218,14 +283,18 @@ Running Alice's transaction does three things at once:
 
 With a base fee of 20 gwei and a tip of 2 gwei that is 21,000 × 22 = 462,000 gwei, or 0.000462 ETH. The base fee part is destroyed ("burned"); only the tip goes to the producer.
 
-Every other [[node]] re-runs the block and must arrive at the same balances, or it rejects the block.`,
+Every other [[node]] re-runs the block and must arrive at the same balances, or it rejects the block.
+
+**Try it:** **Produce next block** packs the next three transactions. The labels next to her block split Alice's fee using the base fee and tip you set in the previous step, and the panel shows the total. Go back and change them: the burned part follows the base fee, the producer's part follows the tip.`,
         expert: `When a transaction executes, the client checks \`tx.nonce == account.nonce\`, \`maxFeePerGas ≥ baseFeePerGas\` and \`balance ≥ gasLimit × maxFeePerGas + value\`. It then charges \`gasLimit × effectiveGasPrice\` up front, where \`effectiveGasPrice = baseFeePerGas + min(maxPriorityFeePerGas, maxFeePerGas − baseFeePerGas)\`.
 
 After execution the unused [[gas]] is refunded, so the final [[gas-fee]] is \`gasUsed × effectiveGasPrice\`. Of that, \`gasUsed × baseFeePerGas\` is burned and the rest is credited to the block's \`feeRecipient\`.
 
 The nonce is incremented and the fee is paid even if execution reverts. A revert undoes the state changes of the call, not the fact that the transaction was included.
 
-The receipt returned over RPC includes \`status\`, \`gasUsed\`, \`cumulativeGasUsed\`, \`effectiveGasPrice\` and \`logs\`. The [[block-header]] commits to the outcome through \`stateRoot\`, \`transactionsRoot\` and \`receiptsRoot\`, so a [[full-node]] that re-executes the block and gets a different root rejects it. \`eth_getTransactionReceipt\` returns \`null\` until the transaction is in a block.`,
+The receipt returned over RPC includes \`status\`, \`gasUsed\`, \`cumulativeGasUsed\`, \`effectiveGasPrice\` and \`logs\`. The [[block-header]] commits to the outcome through \`stateRoot\`, \`transactionsRoot\` and \`receiptsRoot\`, so a [[full-node]] that re-executes the block and gets a different root rejects it. \`eth_getTransactionReceipt\` returns \`null\` until the transaction is in a block.
+
+The scene applies these formulas to a 21,000-gas transfer with the values from the previous step: \`burned = 21000 × baseFee\` and \`to proposer = 21000 × min(maxPriorityFeePerGas, 30 − baseFee)\`. The model holds the base fee constant from one block to the next; on mainnet it would move by up to 12.5% per block.`,
       },
       code: {
         lang: 'Worked example',
@@ -242,13 +311,15 @@ to proposer = 21000 × 2         =  42000 gwei`,
     },
     confirmations: {
       title: 'Confirmations',
-      alt: "New blocks are added one by one after the block that holds Alice's transaction, each numbered as one more confirmation. Bob's wallet glows and has coins beside it.",
+      alt: "Each press of the button adds one block after the block that holds Alice's transaction, each numbered as one more confirmation. Bob's wallet glows and has coins beside it.",
       body: {
         beginner: `Bob can see the payment as soon as the [[block]] arrives. But the newest page of the [[ledger]] is also the easiest one to undo, so for anything valuable he waits a little.
 
 Every block added after Alice's block is one more [[confirmation]]. Each one buries her payment deeper: to undo it, someone would have to redo all the blocks on top as well.
 
-For a cup of coffee, one confirmation is plenty. For a house, you wait for more.`,
+For a cup of coffee, one confirmation is plenty. For a house, you wait for more.
+
+**Try it:** press **Produce next block** and count. Every new block on top adds one confirmation to Alice's payment, and Bob's wallet shows the number.`,
         intermediate: `A [[transaction]] in the newest [[block]] has 1 [[confirmation]]. Each block built on top adds one.
 
 Why wait? Now and then two blocks appear at the same height and the network keeps only one of them. A transaction in the dropped block goes back to the [[mempool]] and normally gets into a later block, but for a moment it looked confirmed and then was not.
@@ -258,14 +329,18 @@ How long people wait depends on the chain:
 - **Bitcoin**: the common rule is 6 confirmations, about an hour.
 - **Ethereum**: a block becomes *finalized* about a quarter of an hour after it appears. From then on it cannot be reverted unless the attackers give up an enormous deposit.
 
-Exchanges set their own thresholds and raise them for small or less secure chains.`,
+Exchanges set their own thresholds and raise them for small or less secure chains.
+
+**Try it:** each press of **Produce next block** adds one block and one [[confirmation]]. Keep going until you reach Bitcoin's customary six; at Bitcoin's pace that is about an hour of waiting.`,
         expert: `Under [[proof-of-work]], [[finality]] is probabilistic. An attacker with a share \`q\` of the [[hashrate]] who is \`z\` blocks behind catches up with probability of about \`(q/p)^z\`, where \`p = 1 − q\`. For \`q = 0.1\` and \`z = 6\` that is below 0.1%. It never reaches zero, and for \`q ≥ 0.5\` it is 1.
 
 Ethereum's [[proof-of-stake]] adds explicit [[finality]]. Time is divided into [[slot|slots]] of 12 seconds and [[epoch|epochs]] of 32 slots (6.4 minutes). [[casper-ffg]] justifies an epoch's checkpoint once [[validator|validators]] holding two thirds of the [[stake]] vote for it, and finalizes a checkpoint when the next one is justified directly on top of it. A block is therefore finalized two to three epochs after it appears, roughly 13 to 19 minutes. Reverting it would require at least one third of the stake to sign conflicting votes and lose that stake to [[slashing]].
 
 Applications pick their own risk level through the block tags of the RPC interface: \`latest\` (may still be reorged), \`safe\` (justified) and \`finalized\`.
 
-If a [[reorg]] removes the block, the transaction is not lost. It returns to the [[mempool]] and remains valid as long as its [[account-nonce]] is still unused.`,
+If a [[reorg]] removes the block, the transaction is not lost. It returns to the [[mempool]] and remains valid as long as its [[account-nonce]] is still unused.
+
+The button appends one block per press: \`confirmations = tip height − inclusion height + 1\`. The counter stops at six. How likely a block buried that deep is to be replaced under [[proof-of-work]] is the catch-up probability you explored with the sliders in the first lesson.`,
       },
       code: {
         lang: 'JavaScript (ethers v6)',

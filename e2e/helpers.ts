@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 
-export const LESSONS = ['blockchain', 'transactions', 'network', 'pow', 'pos', 'btc-vs-eth', 'other-l1s', 'dapp', 'uniswap-v2', 'uniswap-v3', 'uniswap-v4'];
+export const LESSONS = ['blockchain', 'transactions', 'network', 'pow', 'pos', 'btc-vs-eth', 'other-l1s', 'layer2', 'smart-contracts', 'tokens', 'dapp', 'uniswap-v2', 'uniswap-v3', 'uniswap-v4', 'mev'];
 
 /** Collects console errors and uncaught exceptions for the page's lifetime. */
 export function watchErrors(page: Page): string[] {

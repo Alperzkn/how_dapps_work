@@ -8,7 +8,7 @@ const meta: LessonMeta = {
     en: 'A shared record that everyone can check and nobody can quietly rewrite.',
     tr: 'Herkesin kontrol edebildiği, kimsenin gizlice değiştiremediği ortak bir kayıt.',
   },
-  steps: ['ledger', 'blocks', 'fingerprint', 'tamper', 'history'],
+  steps: ['ledger', 'blocks', 'fingerprint', 'tamper', 'history', 'uses'],
 };
 
 export default meta;

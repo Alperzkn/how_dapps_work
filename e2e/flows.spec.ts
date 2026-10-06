@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { expectNoOverflow, openLesson, watchErrors } from './helpers';
+import { expectNoOverflow, LESSONS, openLesson, watchErrors } from './helpers';
 
 test.use({ viewport: { width: 1440, height: 900 } });
 
@@ -120,11 +120,11 @@ test('presentation mode is driven from the keyboard', async ({ page }) => {
   await expect(page.locator('.topbar')).toBeHidden();
   await expect(page.locator('.lesson-text')).toBeHidden();
   await page.keyboard.press('ArrowRight');
-  await expect(counter).toContainText('3/5');
+  await expect(counter).toContainText('3/6');
   await page.keyboard.press('Space');
-  await expect(counter).toContainText('4/5');
+  await expect(counter).toContainText('4/6');
   await page.keyboard.press('PageUp');
-  await expect(counter).toContainText('3/5');
+  await expect(counter).toContainText('3/6');
   await expect(page).toHaveURL(/blockchain\/3/);
   await page.keyboard.press('l');
   await expect(counter).toContainText('Intermediate');
@@ -209,7 +209,9 @@ test('home lists every lesson, tracks progress and loads no 3D code', async ({ p
   const scripts: string[] = [];
   page.on('request', (r) => r.resourceType() === 'script' && scripts.push(r.url()));
   await page.goto('/#/en');
-  await expect(page.locator('.lesson-card')).toHaveCount(11);
+  await expect(page.locator('.lesson-card')).toHaveCount(LESSONS.length);
+  await expect(page.locator('.map-block')).toHaveCount(LESSONS.length);
+  await expect(page.locator('.scope-note')).toContainText('financial');
   await page.waitForLoadState('networkidle');
   expect(scripts.filter((u) => /LessonPage|Scene/.test(u))).toEqual([]);
 

@@ -37,14 +37,14 @@ for (const lesson of LESSONS) {
 }
 
 test('every step of every lesson renders without errors at each level', async ({ page }) => {
-  test.setTimeout(240_000);
+  test.setTimeout(360_000);
   const errors = watchErrors(page);
   await page.setViewportSize({ width: 1100, height: 800 });
   const levels = ['beginner', 'intermediate', 'expert'];
   for (const lesson of LESSONS) {
     await openLesson(page, `/en/lesson/${lesson}/1?level=beginner`);
     const titles = new Set<string>();
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 14; i++) {
       titles.add(await page.locator('.prose h1').innerText());
       await page.locator(`.level-switch [data-level="${levels[i % 3]}"]`).click();
       await expectCleanText(page);

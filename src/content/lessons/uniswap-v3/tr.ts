@@ -10,7 +10,9 @@ const content: LessonContent = {
     inRange: 'aralıkta',
     outRange: 'aralık dışı',
     idle: 'atıl sermaye',
-    busy: '±%7,5 için kullanılan:',
+    busy: 'kullanılan:',
+    toZero: '← 0’a kadar',
+    toInf: '∞’a kadar →',
     v2Spread: 'v2: her yere yayılmış',
     ruler: 'fiyat ekseni bir cetvel',
     tickStep: '1 tick = %0,01 fiyat adımı',
@@ -33,22 +35,75 @@ const content: LessonContent = {
     holds: 'İçerik (10.000 USDC ile)',
     vsV2: 'v2’ye göre',
     ticks: 'Tick olarak aralık',
+    allCapital: 'havuzdaki bütün para',
+    tryIdle: 'Dene: fiyat gerçekte ne kadar oynuyor?',
+    move: 'Fiyat oynaması',
+    usedRange: 'Fiyatlar',
+    usedShare: 'Kullanılan',
+    idleShare: 'Atıl',
+    v3Gain: 'v3 derinliği',
+    trySwap: 'Dene: swap büyüklüğünü ve yönünü değiştir',
+    direction: 'Yön',
+    buyEth: 'ETH al',
+    sellEth: 'ETH sat',
+    swapSize: 'Ödenen',
+    youGet: 'Alınan',
+    priceMove: 'Fiyat',
+    crossed: 'Geçilen tick',
+    activeL: 'Aktif L',
+    avgV3: 'Ortalama fiyat',
+    avgV2: 'v2, aynı para',
+    traderSell: 'satıcı ETH satıyor',
+    tryTier: 'Dene: bir ücret kademesi seç',
+    tier: 'Ücret kademesi',
+    spacing: 'Tick spacing',
+    boundStep: 'Sınır adımı',
+    feeOn: '10.000 USDC’lik swap ücreti',
+    yourPool: 'senin havuzun',
+    tryDay: 'Dene: simüle edilmiş bir gün (rakamlar temsilîdir)',
+    dayKind: 'Günün türü',
+    width: 'Aralık',
+    pathCalm: 'Sakin',
+    pathTrend: 'Trendli',
+    pathVolatile: 'Oynak',
+    timeIn: 'Aralıkta',
+    feesYou: 'Ücretin',
+    feesWide: '±%30 aralık',
+    lossHold: 'Tutmaya göre kayıp',
+    you: 'sen:',
+    wide: '±%30:',
+    yourRange: 'senin aralığın',
+    simulated: 'simüle edilmiş gün',
+    feeBars: 'yarım saatlik ücretler',
+    crash: 'Çöküş',
+    rally: 'Yükseliş',
+    backTo: '2.000’e dön',
+    holdsNow: 'Şimdiki içerik',
+    vsHold: 'v3, tutmaya göre',
+    v2Same: 'v2, aynı hareket',
+    deposit: 'açılış:',
+    allEth: 'tamamı ETH · kazanç yok',
+    allUsdc: 'tamamı USDC · kazanç yok',
   },
   steps: {
     idle: {
       title: 'v2 havuzunun çoğu boşta bekler',
-      alt: '1.000 ile 3.000 USDC arasındaki fiyat ekseni boyunca uzun, düz bir likidite tabakası uzanıyor. Yalnızca 2.000 olan güncel fiyatın çevresindeki dar, renkli kısım işlem görüyor; gri kalan kısım atıl.',
+      alt: '1.000 ile 3.000 USDC arasındaki fiyat ekseni boyunca uzun, düz bir likidite tabakası uzanıyor. Yalnızca 2.000 olan güncel fiyatın çevresindeki renkli bant işlem görüyor; gri kalan kısım atıl. Yanındaki sütunun parlayan kısmı, bu fiyat bandının havuz sermayesinin ne kadarını kullandığını gösteriyor.',
       body: {
         beginner: `Girişten en arkadaki tozlu depoya kadar bütün raflarına eşit miktarda mal koyan bir dükkân düşün. Müşteriler ise yalnızca kapının yanındaki iki rafa uğruyor.
 
 v2'deki bir [[liquidity-pool]] böyle çalışır. [[liquidity-provider]]'ların koyduğu para, sıfıra yakın bir fiyattan sonsuza kadar **mümkün olan her fiyata** yayılır.
 
-Oysa ETH'nin fiyatı her yere uğramaz; çoğu gün birkaç yüzde oynar. Tabakanın gri kısmı, belki hiç gelmeyecek fiyatları bekleyen paradır.`,
+Oysa ETH'nin fiyatı her yere uğramaz; çoğu gün birkaç yüzde oynar. Tabakanın gri kısmı, belki hiç gelmeyecek fiyatları bekleyen paradır.
+
+Sürgüyü çekerek fiyatın gerçekte ne kadar gezindiğini seç. Renkli bant, tabakanın kullanılan kısmıdır. Sağdaki sütun havuzdaki paranın tamamıdır; parlayan kısmı o bandın ihtiyaç duyduğu paydır. Fiyat çok sert oynasa bile sütunun çoğu gri kalır.`,
         intermediate: `v2'de [[constant-product]] kuralı \`x · y = k\`, 0'dan ∞'a kadar her fiyat için geçerlidir. Bu basittir ve havuz hiç tükenmez, ama sermayeyi boşa harcar.
 
 Alım satımlar yalnızca güncel fiyatın yakınındaki [[reserves]] kısmını kullanır. ETH 2.000 USDC iken fiyatı 1.850–2.150 arasında herhangi bir yere götürmek, havuzun değerinin %4'ünden azını kullanır. Kalan %96 bu aralıkta hiçbir şey kazanmaz; ancak ETH aralıktan çıkarsa işe yarar.
 
-"Stablecoin" çiftlerinde durum daha da uçtadır. Uniswap'in v3 duyuru yazısı, v2'deki bir DAI/USDC havuzunun sermayesinin yalnızca %0,5 kadarını 0,99 ile 1,01 arasındaki işlemlere ayırdığını belirtir; oysa hacmin neredeyse tamamı orada döner.`,
+"Stablecoin" çiftlerinde durum daha da uçtadır. Uniswap'in v3 duyuru yazısı, v2'deki bir DAI/USDC havuzunun sermayesinin yalnızca %0,5 kadarını 0,99 ile 1,01 arasındaki işlemlere ayırdığını belirtir; oysa hacmin neredeyse tamamı orada döner.
+
+Sürgüyü dene: ±%1'lik bir hareket sermayenin %0,5'ini, ±%7,5'lik bir hareket %3,7'sini kullanır; ±%50 (1.000–3.000) bile yalnızca %24'ünü kullanır. Burada çizilen tabaka, eğrinin yalnızca 1.000–3.000 arasındaki parçasıdır; paranın geri kalanı iki yanda daha uzaktaki fiyatları karşılar. Payı bu yüzden bant değil, sütun gösterir.`,
         expert: `v2'deki bir pozisyon, \`x · y = L²\` eğrisinin tamamına yayılmış likiditedir: \`x = L / √P\` ve \`y = L · √P\`. Fiyatın \`P\`'den \`P'\`'ye gitmesi için havuzun yalnızca \`Δy = L · (√P' − √P)\` kadarına ihtiyacı vardır; geri kalanı o aralığın dışındaki fiyatlar için tutulan teminattır.
 
 \`P\` çevresindeki bir \`[Pa, Pb]\` aralığı için gerçekten gereken sermaye payı:
@@ -57,7 +112,9 @@ Alım satımlar yalnızca güncel fiyatın yakınındaki [[reserves]] kısmını
 
 Fiyat 2.000 iken 1.850–2.150 için bu %3,7; fiyat 1,00 iken 0,99–1,01 için %0,5 eder. Bunun tersi, v3'ün sunduğu [[capital-efficiency]] kazancıdır: bu iki aralık için 27× ve 200×.
 
-v2'de sonuç, TVL başına yüksek [[price-impact]] ve sermayeye göre düşük ücret getirisidir. v3, aralığı her [[liquidity-provider]]'ın kendisinin seçmesine izin verir.`,
+v2'de sonuç, TVL başına yüksek [[price-impact]] ve sermayeye göre düşük ücret getirisidir. v3, aralığı her [[liquidity-provider]]'ın kendisinin seçmesine izin verir.
+
+Sürgü \`Pa = P · (1 − m)\` ve \`Pb = P · (1 + m)\` değerlerini belirler; panel yukarıdaki ifadeyi hesaplar. Küçük \`m\` için sonuç \`m / 2\`'ye yakındır: ±m oynayan bir fiyat, havuz sermayesinin yaklaşık m'nin yarısı kadarına ihtiyaç duyar.`,
       },
     },
     concentrated: {
@@ -153,13 +210,15 @@ mapping(int16 => uint256) public tickBitmap;  // hangi tick'ler initialized`,
     },
     crossing: {
       title: 'Bir "swap", "tick"\'lerin üzerinden yürür',
-      alt: 'Farklı yüksekliklerde sütunlardan oluşan bir sıra. Bir alıcı USDC gönderip ETH alıyor; fiyat işareti sütun sütun sağa ilerliyor. Geçtiği sütunlar ETH renginden USDC rengine dönüyor, işaretin altındaki sütun parlıyor.',
+      alt: 'Farklı yüksekliklerde sütunlardan oluşan bir sıra. Bir alıcı USDC gönderip ETH alıyor; fiyat işareti, fiyatın başladığı yeri gösteren küçük direğin sağında duruyor ve yerdeki ok, takasın fiyatı ne kadar ittiğini gösteriyor. Fiyatın geçtiği sütunlar ETH renginden USDC rengine dönmüş, işaretin altındaki sütun parlıyor, geçilen tick direkleri yanıyor.',
       body: {
         beginner: `Birçok kişi farklı bantlar seçtiği için havuz bir şehir silüetine benzer: çok bandın üst üste geldiği yerde yüksek, az bandın olduğu yerde alçak.
 
-Bir alıcının ETH almasını izle. Fiyat sağa doğru, sütun sütun tırmanır. O anda işi yapan tek sütun, işaretin altındaki sütundur.
+Sürgüyü çekerek alıcıya daha çok ETH aldır. Fiyat sağa doğru, sütun sütun tırmanır. O anda işi yapan tek sütun, işaretin altındaki sütundur.
 
-Yüksek bir sütunda fiyat yavaş ilerler, çünkü o fiyattan satılacak çok şey vardır. Alçak sütunda ise koşar. Fiyatın geçtiği her sütun ETH'sini satmıştır ve artık USDC tutar.`,
+Yüksek bir sütunda fiyat yavaş ilerler, çünkü o fiyattan satılacak çok şey vardır. Alçak sütunda ise koşar. Fiyatın geçtiği her sütun ETH'sini satmıştır ve artık USDC tutar.
+
+**ETH sat**'a geçersen fiyat bu kez sola yürür: geçtiği sütunlar ETH alır ve yeniden ETH rengine döner. Paneldeki son iki sayı, alıcının elde ettiği fiyatı, aynı parayı tutan bir v2 havuzunun vereceği fiyatla karşılaştırır.`,
         intermediate: `Herhangi bir anda yalnızca [[price-range]]'i güncel fiyatı içeren pozisyonlar aktiftir. Bir sonraki işlemin [[price-impact]] değerini onların toplam likiditesi belirler.
 
 Bir [[swap]] aralık aralık ilerler:
@@ -168,7 +227,9 @@ Bir [[swap]] aralık aralık ilerler:
 - Bir pozisyonun başladığı ya da bittiği bir [[tick]]'e ulaşınca havuz o pozisyonun likiditesini ekler ya da çıkarır ve yoluna devam eder.
 - Alıcı, her aralıkta takas ettiği miktar üzerinden ücret öder; bu ücret orada aktif olan pozisyonlar arasında paylaşılır.
 
-Yani büyük bir [[swap]] birkaç [[tick]] geçebilir ve ortalama fiyatı, her aralığın ne kadar derin olduğuna bağlıdır. Her geçiş fazladan [[gas]] harcar.`,
+Yani büyük bir [[swap]] birkaç [[tick]] geçebilir ve ortalama fiyatı, her aralığın ne kadar derin olduğuna bağlıdır. Her geçiş fazladan [[gas]] harcar.
+
+Dene: panel [[swap]]'ı %0,30 ücretle, aralık aralık hesaplar. 3.000.000 USDC'lik bir alım 2 [[tick]] geçer ve ETH başına ortalama 2.049 öder; aynı 15 milyonu tutan bir v2 havuzu yaklaşık 2.804 isterdi. Sürgüyü daha da ilerlet ve fiyat sığ aralıklara tırmandıkça aktif likiditenin düştüğünü izle: artık her ek dolar fiyatı daha çok oynatır.`,
         expert: `Havuz, aktif aralık için tek bir sayı tutar: \`liquidity\`, yani aralıkta olan pozisyonların [[liquidity-l]] toplamı. \`swap()\`, girdi tükenene ya da fiyat sınırına ulaşılana kadar döner:
 
 - \`tickBitmap.nextInitializedTickWithinOneWord\` ile [[swap]] yönündeki bir sonraki "initialized tick" bulunur;
@@ -177,7 +238,9 @@ Yani büyük bir [[swap]] birkaç [[tick]] geçebilir ve ortalama fiyatı, her a
 
 Bir [[tick]]'teki \`liquidityNet\`, alt sınırı o [[tick]] olan pozisyonlar için \`+L\`, üst sınırı o [[tick]] olanlar için \`−L\` değerlerinin toplamıdır.
 
-Ücretler, fiyatlamada kullanılan rezervlere hiç karışmaz. Her adım \`feeGrowthGlobal0X128\` ya da \`feeGrowthGlobal1X128\` değerine \`feeAmount · 2^128 / liquidity\` ekler. Bir pozisyonun payı \`feeGrowthInside = global − below − above\` olarak okunur; bu, pozisyonun iki [[tick]]'indeki \`feeGrowthOutside\` değerlerinden hesaplanır.`,
+Ücretler, fiyatlamada kullanılan rezervlere hiç karışmaz. Her adım \`feeGrowthGlobal0X128\` ya da \`feeGrowthGlobal1X128\` değerine \`feeAmount · 2^128 / liquidity\` ekler. Bir pozisyonun payı \`feeGrowthInside = global − below − above\` olarak okunur; bu, pozisyonun iki [[tick]]'indeki \`feeGrowthOutside\` değerlerinden hesaplanır.
+
+Panel bu döngüyü, çizilen 17 aralık üzerinde düz kayan noktalı sayılarla ve %0,30 ücretle çalıştırır. Bir sonraki sınıra ulaşmak için \`L · (√P_next − √P)\` kadar token1 ya da \`L · (1/√P_next − 1/√P)\` kadar token0 gerekir. Ücret düşüldükten sonra kalan girdi buna yetiyorsa döngü sınırı geçer ve sıradaki aralığın \`L\` değeriyle sürer; yetmiyorsa \`√P + Δy / L\` noktasında durur. Ortalama fiyat, toplam girdinin toplam çıktıya oranıdır; v2 rakamı ise eşit değerdeki rezervlere uygulanan v2 çıktı formülüdür.`,
       },
       code: {
         lang: 'Solidity (UniswapV3Pool.swap, sadeleştirilmiş)',
@@ -208,13 +271,15 @@ Bir [[tick]]'teki \`liquidityNet\`, alt sınırı o [[tick]] olan pozisyonlar i�
     },
     'fees-nft': {
       title: 'Ücret kademeleri ve "NFT" olarak pozisyonlar',
-      alt: 'Aynı çift için üç ayrı havuz yan yana duruyor; üzerlerinde %0,05, %0,30 ve %1 yazıyor ve sütunları ince, orta ve kalın. Üstlerinde kartlar süzülüyor; her kart kapsadığı fiyat aralığına bağlı.',
+      alt: 'Aynı çift için üç ayrı havuz yan yana duruyor; üzerlerinde %0,05, %0,30 ve %1 yazıyor ve sütunları ince, orta ve kalın. Üstlerinde kartlar süzülüyor; her kart kapsadığı fiyat aralığına bağlı. Panelde seçilen havuz yükselmiş ve parlıyor.',
       body: {
         beginner: `v2'de bütün havuzlar aynı %0,3 ücreti alırdı. v3'te aynı iki [[token]] için birden fazla havuz olabilir ve her birinin ücreti farklıdır: fiyatı pek oynamayan çiftler için çok küçük, riskli çiftler için daha büyük bir ücret.
 
 İkinci bir değişiklik daha var. v2'de herkesin havuzdaki payı aynı türden bir şeydi, bu yüzden basit bir [[token]] olabiliyordu. v3'te bandını sen seçersin ve hiçbir bant bir diğerine benzemez.
 
-Bu yüzden pozisyonun eşi olmayan bir makbuzdur: bir "NFT". Kartta hangi havuz, hangi bant ve ne kadar olduğu yazar. Kart kimdeyse pozisyon onundur.`,
+Bu yüzden pozisyonun eşi olmayan bir makbuzdur: bir "NFT". Kartta hangi havuz, hangi bant ve ne kadar olduğu yazar. Kart kimdeyse pozisyon onundur.
+
+Düğmelerle bir ücret seç; katılacağın havuz yukarı kalkar. Sonraki adımda o havuza bir günlüğüne bir pozisyon koyacaksın.`,
         intermediate: `Bir v3 havuzunu iki [[token]] **ve** bir [[fee-tier]] tanımlar. Kademeler %0,01, %0,05, %0,30 ve %1'dir. Her kademe, kendi fiyatı ve likiditesi olan ayrı bir havuzdur; bir çift için hangisinin derin havuz olacağına piyasa karar verir.
 
 - %0,01 ve %0,05: "stablecoin" çiftleri ve en büyük çiftler; burada [[liquidity-provider]] az risk alır.
@@ -223,14 +288,18 @@ Bu yüzden pozisyonun eşi olmayan bir makbuzdur: bir "NFT". Kartta hangi havuz,
 
 Kademe aynı zamanda [[tick-spacing]] değerini de belirler: 1, 10, 60 ve 200.
 
-Her pozisyonun aralığı kendine ait olduğu için v2'nin birbirinin yerine geçebilen [[lp-token]]'ı artık işe yaramaz. Bir pozisyon bir [[nft-position]]'dır, yani bir ERC-721 [[token]]'dır. Ücretler v2'deki gibi pozisyona geri eklenmez: ayrı bir yerde birikir ve sahibi onları kendisi toplar.`,
+Her pozisyonun aralığı kendine ait olduğu için v2'nin birbirinin yerine geçebilen [[lp-token]]'ı artık işe yaramaz. Bir pozisyon bir [[nft-position]]'dır, yani bir ERC-721 [[token]]'dır. Ücretler v2'deki gibi pozisyona geri eklenmez: ayrı bir yerde birikir ve sahibi onları kendisi toplar.
+
+Panelden bir kademe seç ve [[tick-spacing]] değerinin senin için ne demek olduğuna bak: bir pozisyonun sınırları fiyatın her %0,10, %0,60 ya da %2,02'sinde bir yere oturabilir.`,
         expert: `"Factory", \`(token0, token1, fee)\` üçlüsünü tek bir havuza eşler; \`feeAmountTickSpacing\` ise 100 → 1, 500 → 10, 3000 → 60, 10000 → 200 değerlerini verir (ücretler "basis point"'in yüzde biri cinsindendir). %0,01 kademesi sonradan yönetişim kararıyla, \`enableFeeAmount\` üzerinden eklendi.
 
 Çekirdek havuz "NFT" diye bir şey bilmez. Pozisyonları \`keccak256(abi.encodePacked(owner, tickLower, tickUpper))\` ile anahtarlar ve \`liquidity\`, \`feeGrowthInside0LastX128\`, \`feeGrowthInside1LastX128\`, \`tokensOwed0\` ve \`tokensOwed1\` değerlerini saklar. Çoğu kullanıcı için \`owner\`, çevre sözleşmesi \`NonfungiblePositionManager\`'dır; bu sözleşme her pozisyon için bir [[nft-position]] (ERC-721) basar ve \`tokenId → (pool, tickLower, tickUpper, liquidity, …)\` kaydını tutar.
 
 Alacak ücret, her [[token]] için \`liquidity · (feeGrowthInside − feeGrowthInsideLast) / 2^128\` kadardır. Pozisyona dokunulduğunda \`tokensOwed0\` / \`tokensOwed1\` alanlarına yazılır ve \`collect()\` ile ödenir. Bileşik getiri oluşmaz; yeniden yatırmak için tekrar likidite eklemek gerekir.
 
-Birbirinin yerine geçemeyen pozisyonlar, bir [[erc-20]] beklenen yerlerde doğrudan kullanılamaz. Bu boşluğu, bir v3 pozisyonunu yönetip karşılığında değiştirilebilir pay veren "vault" sözleşmeleri doldurur.`,
+Birbirinin yerine geçemeyen pozisyonlar, bir [[erc-20]] beklenen yerlerde doğrudan kullanılamaz. Bu boşluğu, bir v3 pozisyonunu yönetip karşılığında değiştirilebilir pay veren "vault" sözleşmeleri doldurur.
+
+Paneldeki "sınır adımı" değeri \`1.0001^tickSpacing − 1\`'dir. Burada seçtiğin kademe, sonraki adımda kullanılan havuzdur.`,
       },
       code: {
         lang: 'Solidity (INonfungiblePositionManager.sol)',
@@ -253,15 +322,52 @@ function mint(MintParams calldata params)
     returns (uint256 tokenId, uint128 liquidity, uint256 amount0, uint256 amount1);`,
       },
     },
+    'fee-day': {
+      title: 'Bir pozisyonun bir günü',
+      alt: 'Duvarda bir grafik: zaman soldan sağa akıyor, fiyat yukarı doğru artıyor. Grafiği boydan boya geçen yarı saydam bir bant, pozisyonun fiyat aralığını gösteriyor. Günün fiyatları bir dizi nokta: bandın içindeyken yeşil, dışındayken kırmızı. Öndeki zeminde duran sütunlar her yarım saatte kazanılan ücreti gösteriyor; sağdaki iki yığın, günün ücretlerini geniş bir pozisyonunkiyle karşılaştırıyor.',
+      body: {
+        beginner: `Şimdi 10.000 USDC'yi bir günlüğüne çalıştır. Duvardaki bant senin aralığın. Noktalar gün boyunca fiyatı gösterir: bandının içindeyken yeşil, dışına çıkınca kırmızı.
+
+Öndeki sütunlar her yarım saatte topladığın ücretlerdir. Dar bir bant sütunları uzatır, çünkü paran işin daha büyük kısmını yapar. Ama noktaların kırmızıya döndüğü yerde sütunlar kaybolur: bandın dışında hiçbir şey kazanmazsın.
+
+Üç gün türünü de dene ve bandı sıkıştır. Sakin bir günde dar bant rahatça kazanır. Fiyatın alıp başını gittiği bir günde ise dar bant erkenden geride kalır, yalnızca birkaç saat kazanır ve paranı öylece elinde tutmaya göre en çok kaybeden o olur.
+
+Bu sayılar, ödünleşimi göstermek için uydurulmuş bir örnektir; bir tahmin değildir.`,
+        intermediate: `Bir [[swap]]'ın ücreti, o fiyatta aktif olan likiditeye gider. Fiyat senin [[price-range]]'inin içindeyken her ücretten aldığın pay, senin likiditenin toplam aktif likiditeye oranıdır. Fiyat dışarı çıktığında payın sıfırdır.
+
+Panel, 2.000'de açılmış 10.000 USDC'lik bir pozisyon için bir günü simüle eder:
+
+- **[[fee-tier]]**, işlem başına ücreti ve sınırlarının oturacağı [[tick-spacing]] değerini belirler. Daha yüksek ücret daha çok gelir demek değildir, çünkü ucuz havuzlar daha çok hacim çeker.
+- **Aralık** derinliğini belirler: ne kadar darsa, fiyat içerideyken payın o kadar büyük olur.
+- **Günün türü**, üç sabit fiyat yolundan biridir.
+
+"Ücretin" değerini geniş ±%30 aralıkla karşılaştır. Sakin günde ±%1 kabaca yirmi kat fazla kazanır. Trendli günde ise günün yaklaşık sekizde biri kadar aralıkta kalır, sonra ETH yükselmeye devam ederken %100 USDC olarak bekler. "Tutmaya göre kayıp" değeri budur ve ücretlerden çok daha büyüktür.
+
+Bu rakamların ardındaki havuz hacimleri ve derinlikleri uydurma yuvarlak sayılardır. Gerçek olan yalnızca mekanizmadır.`,
+        expert: `Model, fiyatı \`P_t\` olan her yarım saatlik dilim \`t\` için şöyledir:
+
+\`fee_t = V_t · φ · L / (L + L_pool)\`, eğer \`Pa ≤ P_t < Pb\` ise; değilse \`0\`
+
+\`V_t\` dilimin hacmi, \`φ\` [[fee-tier]], \`L\` \`P₀ = 2.000\` fiyatında 10.000 USDC ile elde ettiğin [[liquidity-l]], \`L_pool\` ise diğer herkesin sabit kabul edilen likiditesidir. Zincir üzerinde \`feeGrowthInside\` tam da bunu ölçer: yalnızca güncel [[tick]] aralığının içindeyken biriken, likidite birimi başına ücret.
+
+Sınırlar, kademenin [[tick-spacing]] değerine göre dışa doğru yuvarlanır. %1 havuzunda ([[tick-spacing]] 200, adım başına yaklaşık %2) ±%1'lik bir istek kabaca 1.958–2.038 olur.
+
+"Tutmaya göre kayıp" \`V(P_end) − (x₀ · P_end + y₀)\` değeridir; \`V\`, 2. adımdaki gibi pozisyonun sıkıştırılmış fiyattaki [[token]] miktarlarından hesaplanır. Bu, ücretlerden önceki, USDC cinsinden [[impermanent-loss]]'tur; günün net sonucu iki rakamın toplamıdır.
+
+Varsayımlar: hacim güne eşit yayılır (sakin, trendli ve oynak gün için 0,6×, 1× ve 1,6× ile ölçeklenir), diğer [[liquidity-provider]]'lar tepki vermez ve her kademenin hacmi ile derinliği veri değil, temsilî yuvarlak sayılardır.`,
+      },
+    },
     efficiency: {
       title: 'Sermayenden daha fazlası, ama daha fazla risk',
-      alt: 'İki sıra likidite. Arkada, tüm aralığa yayılmış düz v2 tabakası ve yanında yüksek bir sermaye yığını. Önde, yoğunlaştırılmış v3 pozisyonu ve yanında güncel fiyatta aynı derinliği sağlayan çok daha küçük bir yığın.',
+      alt: 'İki sıra likidite. Arkada, tüm aralığa yayılmış düz v2 tabakası ve yanında yüksek bir sermaye yığını. Önde, yoğunlaştırılmış v3 pozisyonu ve yanında güncel fiyatta aynı derinliği sağlayan çok daha küçük bir yığın. Küçük bir direk, pozisyonun açıldığı 2.000 fiyatını gösteriyor; fiyat aralığın dışındayken pozisyon soluklaşıyor ve tek bir token tuttuğu yazıyor.',
       body: {
         beginner: `Soldaki iki yığın işin özünü gösteriyor. Bugünkü fiyatta alıcılara aynı derinliği sunmak için v2 büyük yığına ihtiyaç duyar. Senin v3 bandın için küçük yığın yeter.
 
 İyi haber bu: fiyat bandının içinde kaldığı sürece aynı para çok daha fazla ücret kazanır.
 
-Kötü haber şu: fiyat bandı geride bırakabilir. Fiyatı bandın dışına kaydır. Pozisyonun artık hiçbir şey kazanmaz ve tamamı, ucuzlayan [[token]]'a dönüşmüştür. Dar bantlar daha çok kazanır ama daha sık geride kalır.`,
+Kötü haber şu: fiyat bandı geride bırakabilir. Fiyatı bandın dışına kaydır. Pozisyonun artık hiçbir şey kazanmaz ve tamamı, ucuzlayan [[token]]'a dönüşmüştür. Dar bantlar daha çok kazanır ama daha sık geride kalır.
+
+**Yükseliş** ya da **Çöküş** düğmesine bas ve fiyatı kendi başına koşmaya bırak. Sütunların teker teker renk değiştirmesini, sonunda bütün pozisyonun tek renge dönmesini izle. Panel, paranı öylece elinde tutmaya göre ne kadar geride kaldığını, v2 için aynı rakamla yan yana gösterir.`,
         intermediate: `[[capital-efficiency]], sermayenin bir aralıkta sağladığı derinliğin, v2'de sağlayacağı derinliğe oranıdır. Sürgüleri dene: 1.800–2.200 yaklaşık 20×, 1.950–2.050 yaklaşık 80× eder.
 
 Bedeli risktir:
@@ -270,14 +376,18 @@ Bedeli risktir:
 - **Daha büyük [[impermanent-loss]]**: pozisyonun bir v2 pozisyonundan daha hızlı yeniden dengelenir; bu yüzden elde tutmaya göre kayıp, verimlilikle yaklaşık aynı oranda büyür.
 - **Bakım**: aralıkta kalmak pozisyonu taşımayı gerektirir; bu [[gas]] harcar ve kaybı kesinleştirir.
 
-Dar aralıklar, "stablecoin"'ler gibi fiyatını koruyan çiftlere uyar. Geniş aralıklar oynak çiftlere uyar.`,
+Dar aralıklar, "stablecoin"'ler gibi fiyatını koruyan çiftlere uyar. Geniş aralıklar oynak çiftlere uyar.
+
+**Yükseliş** ya da **Çöküş** düğmesine bas ve son iki sayıyı oku. Pozisyon 2.000'de açıldı; eksendeki direk orayı gösterir. 1.800–2.200 aralığında 2.400'e bir yükseliş, pozisyonu elde tutmanın %6,6 gerisinde bırakır; aynı hareketi yapan bir v2 pozisyonu %0,4 geride kalır.`,
         expert: `Aynı sermaye için [[liquidity-l]] değeri \`L\`, verimlilik çarpanı \`2√P / (2√P − √Pa − P/√Pb)\` kadar büyüktür. Hacim başına ücret geliri aktif \`L\` içindeki payınla orantılıdır; dolayısıyla aralıkta kaldığın sürece aynı çarpanla büyür.
 
 Kayıp da öyle. Bir pozisyonun aralık içindeki değeri \`V(P) = L · (2√P − √Pa − P/√Pb)\` olur. Başlangıçtaki miktarları elde tutmaya göre farkta kaydırma terimleri birbirini götürür ve geriye \`L · (2√P − √P₀ − P/√P₀)\` kalır: bu, aynı \`L\`'ye sahip bir v2 pozisyonunun [[impermanent-loss]] değerinin ta kendisidir. \`L\` *n* kat büyükse, bir sınıra ulaşılana kadar sermayeye oranla kayıp da *n* kat büyüktür.
 
 Sınırın ötesinde pozisyon %100 değer kaybeden varlıktan oluşur ve kazanmayı bırakır: \`Pb\`'nin üstünde \`L · (√Pb − √Pa)\` kadar token1, \`Pa\`'nın altında \`L · (1/√Pa − 1/√Pb)\` kadar token0 tutar. Bu yüzden fiyatın tamamen üstüne ya da altına konan tek taraflı bir aralık, ücret kazanan bekleyen bir limit emri gibi davranır; ama fiyat geri dönerse emir geri açılır.
 
-v3'te bir [[liquidity-provider]]'ın getirisi, ücretlerden bu kaybın çıkarılmasıyla bulunur. Ücretler, aktif [[tick]]'te likidite sağlayana gider; bu yüzden pasif geniş pozisyonlar, aktif yönetilen dar pozisyonlarla yarışır. Bunlara, büyük bir [[swap]]'tan hemen önce eklenip hemen sonra çekilen likidite de dahildir.`,
+v3'te bir [[liquidity-provider]]'ın getirisi, ücretlerden bu kaybın çıkarılmasıyla bulunur. Ücretler, aktif [[tick]]'te likidite sağlayana gider; bu yüzden pasif geniş pozisyonlar, aktif yönetilen dar pozisyonlarla yarışır. Bunlara, büyük bir [[swap]]'tan hemen önce eklenip hemen sonra çekilen likidite de dahildir.
+
+Panel \`L\` değerini yatırma anında (\`P₀ = 2.000\`, 10.000 USDC) sabitler ve \`V(P) / (x₀ · P + y₀) − 1\` değerini gösterir; \`V\` içinde \`P\` aralığa sıkıştırılır. Yanında v2 için \`r = P / P₀\` olmak üzere \`2√r / (1 + r) − 1\` durur. Sınırları 2.000 dışarıda kalacak şekilde oynatırsan yatırım tek taraflı olur ve karşılaştırma tek bir [[token]]'la başlar.`,
       },
     },
   },

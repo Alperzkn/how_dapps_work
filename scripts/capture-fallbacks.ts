@@ -19,7 +19,7 @@ for (const id of readdirSync(lessonsDir)) {
   for (const [i, step] of steps.entries()) {
     await page.goto(`${base}/#/en/lesson/${id}/${i + 1}?level=intermediate`);
     await page.waitForSelector('[data-scene-ready]', { timeout: 30_000 });
-    await page.addStyleTag({ content: '.scene-tools, .scene-controls { display: none !important; }' });
+    await page.addStyleTag({ content: '.scene-tools, .scene-controls, .scene-hint, .celebrate, .lesson-progress { display: none !important; }' });
     await page.waitForTimeout(1200);
     await page.locator('.lesson-scene').screenshot({ path: join('public/fallback', id, `${step}.jpg`), type: 'jpeg', quality: 78 });
     count++;

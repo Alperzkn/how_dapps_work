@@ -6,5 +6,6 @@ export const views: Record<string, StepView> = {
   ticks: { target: [0, -0.4, 0.8], zoom: 1.22 },
   crossing: { target: [0, 1.2, 0.8], zoom: 1.35 },
   'fees-nft': { target: [0, 1.3, 0.4], zoom: 1.1 },
+  'fee-day': { target: [0.9, 1.6, 0.2], zoom: 1.08 },
   efficiency: { target: [-0.7, -0.2, -0.5], zoom: 1.08 },
 };

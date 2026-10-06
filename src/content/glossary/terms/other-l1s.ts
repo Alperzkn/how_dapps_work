@@ -15,7 +15,7 @@ const terms: GlossaryTerm[] = [
       short: 'A base blockchain that orders and settles its own transactions with its own consensus. Often written L1.',
       long: `A layer 1 (L1) is a [[blockchain]] that stands on its own: it has its own validators or miners, its own [[consensus]] and its own native coin for fees. [[bitcoin]], [[ethereum]], [[solana]] and [[avalanche]] are layer 1s.
 
-The term exists to contrast with a "layer 2", a system that processes transactions elsewhere but relies on a layer 1 for its security, for example a rollup that posts its data to Ethereum.
+The term exists to contrast with a [[layer-2]], a system that processes transactions elsewhere but relies on a layer 1 for its security, for example a [[rollup]] that posts its data to Ethereum.
 
 Layer 1s differ mainly in how they answer the [[scalability-trilemma]]: how fast they are, how many independent parties run them, and how costly they are to attack.`,
     },
@@ -23,7 +23,7 @@ Layer 1s differ mainly in how they answer the [[scalability-trilemma]]: how fast
       short: 'Kendi [[transaction]]\'larını kendi [[consensus]] mekanizmasıyla sıralayıp kesinleştiren taban [[blockchain]]. Kısaca L1.',
       long: `[[layer-1]] (L1), kendi ayakları üzerinde duran bir [[blockchain]]'dir: kendi [[validator]]'ları ya da [[miner]]'ları, kendi [[consensus]] mekanizması ve ücretler için kendi coin'i vardır. Bitcoin, Ethereum, Solana ve Avalanche birer [[layer-1]] zinciridir.
 
-Bu terim "layer 2" ile karşılaştırma yapmak için kullanılır: [[transaction]]'ları başka yerde işleyen ama güvenliği için bir [[layer-1]]'a dayanan sistemler; örneğin verisini Ethereum'a yazan bir "rollup".
+Bu terim [[layer-2]] ile karşılaştırma yapmak için kullanılır: [[transaction]]'ları başka yerde işleyen ama güvenliği için bir [[layer-1]]'a dayanan sistemler; örneğin verisini Ethereum'a yazan bir [[rollup]].
 
 [[layer-1]] zincirleri en çok [[scalability-trilemma]]'ya verdikleri cevapla ayrışır: ne kadar hızlı oldukları, onları kaç bağımsız tarafın çalıştırdığı ve onlara saldırmanın ne kadar pahalı olduğu.`,
     },

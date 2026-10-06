@@ -12,12 +12,6 @@ const content: LessonContent = {
     newWayI: 'bütün havuzlar',
     you: 'sen',
     tab: 'üstü: alacağın | altı: borcun',
-    flash0: 'hesap açılır',
-    flash1: 'swap 1: ETH → USDC, hesaba yazılır',
-    flash2: 'swap 2: USDC → DAI, USDC sıfırlanır',
-    flash3: 'tek ödeme: ETH',
-    flash4: 'tek çekim: DAI',
-    flash5: 'hesap sıfır: tamam',
     before: 'swap öncesi',
     theSwap: 'swap',
     after: 'swap sonrası',
@@ -36,23 +30,79 @@ const content: LessonContent = {
     cmp3I: 'fiyat aralıkları | %0,01–1 fee tier | NFT position',
     cmp4B: 'tek bina, | eklenti kurallar',
     cmp4I: 'singleton + hook | serbest ya da dynamic fee | native ETH',
-    need2B: 'yatır | ve unut',
-    need2I: 'pasif LP, | küçük token çiftleri',
-    need3B: 'daha çok ücret, | daha çok ilgi',
-    need3I: 'aktif LP, | sabit ve büyük çiftler',
-    need4B: 'özel | kurallar',
-    need4I: 'özel mantık, | ucuz multi-hop',
+    tryDeploy: 'Dene: iki yoldan da yeni havuz aç',
+    deployOld: 'v2 / v3: havuz kur',
+    deployV4: 'v4: havuz ekle',
+    reset: 'Sıfırla',
+    contracts: 'sözleşme',
+    pools: 'havuz',
+    illustrative: 'gas rakamları temsilidir',
+    tryFlash: 'Dene: rotayı kur, çağrıları tek tek yap',
+    hops: 'Rotadaki havuz',
+    forget: 'settle çağrısını unut',
+    nextCall: 'Sonraki çağrı',
+    startOver: 'Baştan başla',
+    callIdle: 'henüz çağrı yok',
+    callUnlock: 'hesap açılır',
+    callSwap: 'swap {n}: {a} → {b}, hesaba yazılır',
+    callSettle: 'tek ödeme: {a}',
+    callTake: 'tek çekim: {b}',
+    callOk: 'hesap sıfır: tamam',
+    callRevert: 'hesap sıfır değil: hepsi geri alındı',
+    moves: 'aktarım',
+    statCall: 'Çağrı',
+    statTab: 'Hesap',
+    tabOpen: 'kalem açık',
+    tabZero: 'sıfır',
+    reverted: 'geri alındı',
+    transfers: 'Tüm rotada aktarım',
+    tryHooks: 'Dene: hook ne yapsın seç, sonra swap yap',
+    hookDoes: 'Hook\'un yaptıkları',
+    hk_dynamic: 'Dynamic fee',
+    hk_limit: 'Limit order',
+    hk_twamm: 'TWAMM',
+    hk_malicious: 'Kötü niyetli',
+    swapBtn: '10 ETH swap et',
+    fired: 'Çalışan çağrılar',
+    notYet: 'swap\'a bas',
+    cbBefore: 'önce',
+    cbSwap: 'swap',
+    cbAfter: 'sonra',
+    received: 'Eline geçen',
+    hookTakes: 'Hook\'ta kalan',
+    filled: 'Dolan emir',
+    skipped: 'çağrılmaz',
+    noHook: 'hook yok: düz havuz',
+    actDynamic: 'ücreti belirler:',
+    actTwamm: 'önce kendi 5 ETH\'sini satar',
+    actLimit: 'bekleyen emri doldurur',
+    actMalicious: 'USDC\'nin %10\'unu alır',
+    tryChoose: 'Dene: üç soruyu yanıtla',
+    qPassive: 'Pasif LP',
+    qActive: 'Aktif LP',
+    qStandard: 'Standart havuz',
+    qCustom: 'Özel mantık',
+    qVolatile: 'Oynak çift',
+    qStable: 'Sabit çift',
+    suggested: 'Öneri',
+    rsCustom: 'özel havuz mantığı için | hook yalnızca v4\'te var',
+    rsPassiveVolatile: 'tüm aralık: hiçbir zaman | aralık dışında kalmaz',
+    rsPassiveStable: 'sabit çift dar aralıktan | nadiren çıkar',
+    rsActiveVolatile: 'fiyat oynadıkça | aralığını taşırsın',
+    rsActiveStable: 'dar aralık, dolar başına | en çok ücret',
   },
   steps: {
     singleton: {
       title: 'Her havuza bir sözleşmeden, hepsine tek sözleşmeye',
-      alt: 'Solda, her biri ayrı bir havuz sözleşmesi olan altı küçük bina. Sağda, altı bölmeli büyük bir kasa. Küçük havuzlar binalardan çıkıp bölmelere zıplıyor.',
+      alt: 'Solda, her biri ayrı bir havuz sözleşmesi olan üç küçük bina. Sağda, üç bölmesi dolu büyük bir kasa. Küçük havuzlar binalardan çıkıp bölmelere zıplıyor. Düğmeler sola bir bina ya da sağa bir bölme ekliyor; her tarafın yanında bir gas yığını büyüyor.',
       body: {
         beginner: `Uniswap v2 ve v3'te her havuz kendi küçük binasında durur. Üç havuzdan geçen bir takas, [[token]]'ları bir kapıdan çıkarıp ötekinden sokmak zorundadır; hem de üç kez.
 
 Uniswap v4 **bütün havuzları tek bir binaya** koyar. Her havuz, binanın içindeki bir bölmeden ibarettir.
 
-Yeni bir havuz açmak artık bina inşa etmek değildir; yalnızca yeni bir bölmeye etiket yapıştırırsın. Havuzlar arasında dolaşan [[token]]'ların da binadan çıkması gerekmez.`,
+Yeni bir havuz açmak artık bina inşa etmek değildir; yalnızca yeni bir bölmeye etiket yapıştırırsın. Havuzlar arasında dolaşan [[token]]'ların da binadan çıkması gerekmez.
+
+**Dene.** Sahnenin altındaki iki düğmeye de bas. Eski yol koca bir bina diker ve [[gas]] yığını birden büyür. v4 yolu bir bölmeyi daha yakar ve yığına incecik bir dilim ekler. [[gas]] rakamları ölçüm değil, kaba birer örnektir.`,
         intermediate: `v2 ve v3'te bir "factory", her havuz için yeni bir [[smart-contract]] kurar. Her biri kendi [[token]]'larını tutar; bu yüzden birkaç havuzdan geçen bir rota, her adımda [[token]]'ları sözleşmeden sözleşmeye aktarır.
 
 v4 bir [[singleton]] kullanır: tek bir sözleşme, yani [[pool-manager]], bütün havuzların durumunu ve [[token]]'larını tutar.
@@ -61,14 +111,18 @@ Değişenler:
 
 - **Havuz açmak**, sözleşme kurmak yerine bir durum güncellemesidir; çok daha az [[gas]] harcar.
 - **[[multi-hop]] bir [[swap]]** tek sözleşmenin içinde kalır; havuzlar arasında hiçbir şey aktarılmaz.
-- Fiyatlama hâlâ v3'ün [[concentrated-liquidity]] yaklaşımıdır: [[tick]]'ler, aralıklar ve aynı [[swap]] matematiği.`,
+- Fiyatlama hâlâ v3'ün [[concentrated-liquidity]] yaklaşımıdır: [[tick]]'ler, aralıklar ve aynı [[swap]] matematiği.
+
+**Dene.** Düğmelerle iki yoldan da havuz aç. v2 / v3 tarafına havuz başına bir sözleşme ve yaklaşık 4,5 milyon [[gas]] eklenir; bu, bir v3 havuz sözleşmesi kurmanın yuvarlak, temsili bir rakamıdır. v4 tarafı tek sözleşmede kalır. Uniswap'in v4 duyurusu, havuz açmanın %99 daha az [[gas]] harcadığını söyler; panel bu oranı uygular.`,
         expert: `\`PoolManager\`, bütün havuzları \`mapping(PoolId => Pool.State) _pools\` içinde saklar. Bir havuzu [[pool-key]] tanımlar: \`currency0\`, \`currency1\`, \`fee\`, \`tickSpacing\` ve \`hooks\`; \`PoolId = keccak256(abi.encode(key))\` olur. \`initialize(key, sqrtPriceX96)\`, o kimlik için \`slot0\` değerini yazar; hiçbir "bytecode" kurulmaz.
 
 \`Pool.State\`, v3 havuz durumunun bir kütüphane "struct"'ı halidir: \`slot0\` ([[sqrt-price-x96]], tick, protokol ücreti, LP ücreti), \`feeGrowthGlobal0X128\` / \`1X128\`, \`liquidity\`, \`ticks\`, \`tickBitmap\` ve \`positions\`. v3'ün yerleşik fiyat "oracle"'ı çekirdekten çıkarılmıştır; "oracle", bir [[hook]]'un sağlayabileceği bir şeydir.
 
 \`fee\`, \`tickSpacing\` ve \`hooks\` anahtarın parçası olduğu için, yönetişimin onayladığı bir listeden seçilmez, serbest parametrelerdir. Aynı çift için istenen sayıda havuz var olabilir.
 
-[[singleton]], bütün havuzların [[token]]'larını para birimi başına tek bir bakiyede tutar. Hangi havuzun neye sahip olduğu yalnızca bir muhasebe kaydıdır; bir sonraki adımı mümkün kılan da budur.`,
+[[singleton]], bütün havuzların [[token]]'larını para birimi başına tek bir bakiyede tutar. Hangi havuzun neye sahip olduğu yalnızca bir muhasebe kaydıdır; bir sonraki adımı mümkün kılan da budur.
+
+Sahnenin altındaki düğmeler iki yolu karşılaştırır. \`factory.createPool()\`, \`CREATE2\` ile eksiksiz bir havuz sözleşmesi kurar; yalnızca "bytecode"'un saklanması bayt başına 200 [[gas]] tutar. \`initialize\` ise \`_pools\` içinde yeni bir \`PoolId\` altına \`slot0\` yazmakla yetinir. Paneldeki [[gas]] toplamları temsili, yuvarlak sayılardır: v3 havuzu başına yaklaşık 4,5 milyon, v4 için de Uniswap'in belirttiği %99'luk düşüşe uyarak bunun %1'i. Ölçüm değildir.`,
       },
       code: {
         lang: 'Solidity (v4-core, kısaltılmış)',
@@ -89,13 +143,17 @@ function initialize(PoolKey memory key, uint160 sqrtPriceX96)
     },
     flash: {
       title: '"Flash accounting": hesabı aç, bir kez öde',
-      alt: 'Kasa ortada duruyor; arkasındaki panoda bir sıfır çizgisinin çevresinde ETH, USDC ve DAI için üç çubuk var. İki takas, hiçbir token hareket etmeden çubukları değiştiriyor; sonra bir ETH parası kullanıcıdan kasaya, bir DAI parası kasadan kullanıcıya gidiyor ve bütün çubuklar sıfıra dönüyor.',
+      alt: 'Kasa ortada duruyor; arkasındaki panoda bir sıfır çizgisinin çevresinde rotadaki her token için bir çubuk var. Öğrencinin yaptığı her çağrı çubukları değiştiriyor: takaslar hiçbir token hareket etmeden çubukları oynatıyor; sonra bir para kullanıcıdan kasaya, bir para kasadan kullanıcıya gidiyor ve bütün çubuklar sıfıra dönüyor. İki yığın, v3 ve v4 için token aktarımlarını sayıyor.',
       body: {
         beginner: `Her siparişten sonra kasaya gidip ödemek yerine birkaç şey ısmarlayıp çıkarken bir kez ödediğin bir kafe düşün.
 
 v4 de böyle çalışır. İşlemin sürerken bina yalnızca ne borçlu olduğunu ve ne alacağın olduğunu not eder. ETH'yi USDC'ye, sonra USDC'yi DAI'ye çevirmek hesapta iki satırdan ibarettir ve USDC birbirini götürür.
 
-Sonunda ETH'yi ödersin, DAI'yi alırsın ve hesap tam olarak sıfır olmak zorundadır. Sıfır değilse her şey, hiç olmamış gibi geri alınır.`,
+Sonunda ETH'yi ödersin, DAI'yi alırsın ve hesap tam olarak sıfır olmak zorundadır. Sıfır değilse her şey, hiç olmamış gibi geri alınır.
+
+**Dene.** Takasının kaç havuzdan geçeceğini seç, sonra **Sonraki çağrı** düğmesiyle işlemi adım adım yürüt. Soldaki iki yığına bak: eski yol her havuz için [[token]]'ları iki kez taşır, v4 ise toplamda yalnızca iki kez.
+
+Sonra **settle çağrısını unut** kutusunu işaretleyip yeniden dene. Sonda hesap sıfır değildir, bu yüzden her şey geri alınır.`,
         intermediate: `[[flash-accounting]], [[pool-manager]]'ın bir işlem boyunca bakiye değişimlerini takip edip [[token]]'ları yalnızca **net** sonuç için hareket ettirmesi demektir.
 
 ETH → USDC → DAI yönündeki [[multi-hop]] bir [[swap]] için sahneyi izle:
@@ -106,14 +164,22 @@ ETH → USDC → DAI yönündeki [[multi-hop]] bir [[swap]] için sahneyi izle:
 
 v3'te aynı rota, USDC'yi ilk havuzdan çıkarıp ikincisine sokar. Burada aradaki [[token]] hiç hareket etmez ve her ek adımda tasarruf büyür.
 
-Aynı mekanizma, sonunda her şey sıfırlandığı sürece likidite eklemeyi, çıkarmayı ve takası tek seferde yapmayı da kapsar.`,
+Aynı mekanizma, sonunda her şey sıfırlandığı sürece likidite eklemeyi, çıkarmayı ve takası tek seferde yapmayı da kapsar.
+
+**Dene.** 1, 2 ya da 3 havuz seç (üçüncü adım DAI'den WBTC'ye devam eder) ve **Sonraki çağrı** ile çağrıları tek tek yap. Her [[swap]]'tan sonra hesaba bak: aradaki her [[token]] yeniden sıfırdadır. Yığınlar [[token]] aktarımlarını sayar. Aynı rotayı "exact input" olarak yürüten bir v3 "router"'ı adım başına iki aktarım yapar, yani 2, 4 ya da 6; v4 her zaman iki.
+
+**settle çağrısını unut** işaretliyken, geri çağrı döndüğünde ETH borcu hâlâ hesapta durur ve işlemin tamamı geri alınır.`,
         expert: `Durumu değiştiren bütün çağrılar bir kilidin içinde yapılır. Çağıran taraf \`PoolManager.unlock(data)\` çağırır; bu da \`msg.sender\` üzerinde \`unlockCallback(data)\` fonksiyonunu geri çağırır. Bu fonksiyonun içinde \`swap\`, \`modifyLiquidity\` ve \`donate\` hiçbir şey aktarmaz; çağıran ve para birimi başına tutulan bir \`int256\` "delta" değerine ekleme yapar. Negatif değer, çağıranın yöneticiye borçlu olduğunu; pozitif değer, yöneticinin çağırana borçlu olduğunu gösterir.
 
 Borçlar \`settle()\` ile kapatılır ([[erc-20]] için: \`sync(currency)\`, aktarım, ardından \`settle()\`; ETH için: \`settle{value: …}()\`), alacaklar \`take(currency, to, amount)\` ile çekilir. Geri çağrı döndüğünde \`unlock\`, sıfırdan farklı "delta" sayısının sıfır olduğunu kontrol eder; değilse \`CurrencyNotSettled\` ile işlemi geri alır.
 
 "Delta" değerleri, sıfırdan farklı olanların sayacı ve kilit bayrağı [[transient-storage]] içinde durur (EIP-1153 \`TSTORE\` / \`TLOAD\`). Bu alan işlemin sonunda silinir ve kalıcı depolamaya yazmak yerine erişim başına 100 [[gas]] harcar.
 
-İki sonucu var. \`settle\`'dan önce \`take\` çağırmak, yöneticinin elindeki her şey için ücretsiz bir "flash loan" demektir; tek sınır, sonda yapılan sıfır kontrolüdür. Ayrıca çağıran, alacağını çekmek yerine karşılığında [[erc-6909]] "claim token"'ı basabilir (\`mint\`) ve daha sonra bir borcu ödemek için yakabilir (\`burn\`); sık işlem yapanlar böylece ERC-20 aktarımlarını tamamen atlar.`,
+İki sonucu var. \`settle\`'dan önce \`take\` çağırmak, yöneticinin elindeki her şey için ücretsiz bir "flash loan" demektir; tek sınır, sonda yapılan sıfır kontrolüdür. Ayrıca çağıran, alacağını çekmek yerine karşılığında [[erc-6909]] "claim token"'ı basabilir (\`mint\`) ve daha sonra bir borcu ödemek için yakabilir (\`burn\`); sık işlem yapanlar böylece ERC-20 aktarımlarını tamamen atlar.
+
+Sahnenin altındaki rota kurucu, \`unlockCallback\` içindeki çağrıları tek tek yapar. Her \`swap\` iki kayıt ekler; pano para birimi başına toplamı gösterir, paneldeki hesap ise sıfırdan farklı para birimlerinin sayısıdır. \`settle\` atlandığında \`take\` yine başarılı olur; ama geri çağrı döndüğünde \`unlock\`, sıfırdan farklı bir "delta" (ETH) bulur ve \`CurrencyNotSettled\` ile işlemi geri alır; \`take\` de böylece geri alınmış olur.
+
+Karşılaştırma ERC-20 aktarımlarını sayar. v3'ün \`SwapRouter.exactInput\` fonksiyonunda her havuz çıktısını "router"'a gönderir, o da bir sonraki havuza öder: adım başına iki aktarım. Tutarlar havuz matematiği değil, temsili sabit kurlardır.`,
       },
       code: {
         lang: 'Solidity (iki adımlı bir swap taslağı)',
@@ -137,13 +203,15 @@ function unlockCallback(bytes calldata data) external returns (bytes memory) {
     },
     hooks: {
       title: '"Hook": her işlemin çevresine takılan kod',
-      alt: 'Bir takas, PoolManager üzerindeki bir şeritte ilerliyor. Havuzdan önceki ve sonraki birer kapıda duruyor; her kapıda bir sinyal, bir kablo boyunca ayrı duran hook sözleşmesine gidip geliyor ve kapı yanıyor.',
+      alt: 'Bir takas, PoolManager üzerindeki bir şeritte, havuzdan önceki ve sonraki birer kapının içinden geçiyor. Ayrı duran hook sözleşmesinin üzerinde, öğrencinin açtığı her davranış için bir modül var. Bir kapı yalnızca hook orada çağrılmayı istediyse yanıyor ve bir sinyal kablo boyunca hook\'a gidip geliyor.',
       body: {
         beginner: `Şimdiye kadar bütün Uniswap havuzları birebir aynı kurallara uyuyordu. v4, bir havuzu açan kişinin ona [[hook]] adı verilen küçük bir program takmasına izin verir.
 
 Havuz, belirli anlarda [[hook]]'u çağırır: örneğin bir takastan hemen **önce** ve hemen **sonra**. [[hook]] o anda fazladan bir şey yapabilir: ücreti değiştirebilir, fiyatı kaydedebilir ya da birinin daha önce bıraktığı bir emri yerine getirebilir.
 
-Paranın havuzdan geçişini izle. Yanan her kapıda havuz durur, [[hook]]'a sorar ve yoluna devam eder.`,
+Paranın havuzdan geçişini izle. Yanan her kapıda havuz durur, [[hook]]'a sorar ve yoluna devam eder.
+
+**Dene.** Düğmelerle [[hook]]'un yeteneklerini aç ya da kapat, sonra **10 ETH swap et** düğmesine bas. Bir kapı ancak [[hook]] orada çağrılmayı istediyse yanar. Her yeteneğin takasına ne yaptığına, bir de **Kötü niyetli** olanın ne yaptığına dikkat et: [[hook]], paranın yolunda duran başka birinin kodudur.`,
         intermediate: `[[hook]], havuz açılırken seçilen ayrı bir [[smart-contract]]'tır ve sonradan değiştirilemez. [[pool-manager]] onu belirli noktalarda çağırır:
 
 - havuz **açılmadan** önce ve açıldıktan sonra;
@@ -158,14 +226,27 @@ Bir [[hook]] yalnızca ihtiyaç duyduğu noktaları uygular. Yapılmış örnekl
 - çok büyük tek bir emri saatlere yayan [[twamm]];
 - v3'te yerleşik olan, v4'ün ise [[hook]]'lara bıraktığı fiyat "oracle"'ı.
 
-[[hook]], senin takasına ya da likiditene dokunan bir koddur. Bir havuzu kullanan kişi, Uniswap'in yanında o havuzun [[hook]]'una da güvenmek zorundadır.`,
+[[hook]], senin takasına ya da likiditene dokunan bir koddur. Bir havuzu kullanan kişi, Uniswap'in yanında o havuzun [[hook]]'una da güvenmek zorundadır.
+
+**Dene.** Bir havuzun tam olarak bir [[hook]] sözleşmesi olur; düğmeler o sözleşmenin ne yaptığını seçer. Havuzda 1.000 ETH ve 2.000.000 USDC var. **10 ETH swap et** düğmesine bas ve paneli oku:
+
+- **Dynamic fee**, [[swap]]'tan önce havuzun sabit %0,30'u yerine %0,62'lik bir ücretle yanıt verir (oyuncak kuralı %6 oynaklık görür).
+- **TWAMM**, [[swap]] öncesi çağrıda uzun soluklu emrinin 5 ETH'lik kısmını önce satar; senin [[swap]]'ın daha kötü bir fiyattan başlar.
+- **Limit order**, [[swap]] sonrası çağrıyı kullanır: işlemin fiyatı bekleyen bir emrin ötesine itmiştir ve [[hook]] o emri doldurur. Senin sonucun değişmez.
+- **Kötü niyetli** olan, [[swap]]'tan sonra USDC'nin %10'unu kendine alır.
+
+Bütün düğmeler kapalıyken havuzun [[hook]]'u yoktur: hiçbir kapı yanmaz, hiçbir şey çağrılmaz.`,
         expert: `Bir [[hook]]'un hangi geri çağrıları alacağı **adresinde** kodludur. En düşük 14 bit izin bayraklarıdır: \`BEFORE_INITIALIZE_FLAG = 1 << 13\` ile başlar, \`AFTER_REMOVE_LIQUIDITY_RETURNS_DELTA_FLAG = 1 << 0\` ile biter; \`BEFORE_SWAP_FLAG\` \`1 << 7\`, \`AFTER_SWAP_FLAG\` ise \`1 << 6\`'dır. [[pool-manager]], \`uint160(address(key.hooks)) & flag\` değerine bakar ve bit sıfırsa çağrıyı atlar; böylece depolamadan okuma gerekmez. Kurulumu yapanlar, adres doğru bitleri taşıyana kadar bir \`CREATE2\` "salt"'ı arar. [[pool-manager]], sözleşmenin bayrağı taşıyan geri çağrıları gerçekten uygulayıp uygulamadığını denetlemez: [[hook]]'lar genellikle kendi adreslerini "constructor" içinde doğrular (\`Hooks.validateHookPermissions\`); \`initialize\` ise yalnızca tutarsız bayrak bileşimlerini \`HookAddressNotValid\` ile reddeder.
 
 Her geri çağrı kendi "selector"'ını döndürmek zorundadır. \`beforeSwap\` buna ek olarak bir \`BeforeSwapDelta\` ve \`uint24\` türünde bir ücret değeri döndürür. \`*_RETURNS_DELTA\` bayraklarıyla bir [[hook]], takasın bir kısmını kendisi alabilir ya da karşılayabilir; standart havuzun üzerine özel eğriler ve [[hook]]'un sahip olduğu likidite böyle kurulur.
 
 [[hook]]'lar çağıranın \`unlock\`'u içinde çalışır, dolayısıyla [[flash-accounting]]'e dahildir: bir [[hook]] \`take\`, \`settle\` ya da \`modifyLiquidity\` çağırabilir ve kendi "delta" değerleri de sıfırlanmak zorundadır.
 
-Riskler gerçektir. Bir [[hook]] yükseltilebilir olabilir, kendi ücretini kesebilir; likidite çıkarma geri çağrılarına sahip olanı da çekimleri başarısız kılabilir. Ayrıca her farklı \`hooks\` adresi ayrı bir havuz demektir; yani bir çiftin likiditesi v3'tekinden daha çok havuza bölünür.`,
+Riskler gerçektir. Bir [[hook]] yükseltilebilir olabilir, kendi ücretini kesebilir; likidite çıkarma geri çağrılarına sahip olanı da çekimleri başarısız kılabilir. Ayrıca her farklı \`hooks\` adresi ayrı bir havuz demektir; yani bir çiftin likiditesi v3'tekinden daha çok havuza bölünür.
+
+Panelde \`key.hooks\`, seçilen davranışların gerektirdiği düşük bitleri gösterir. Model yalnızca [[swap]] bitlerini ayarlar: [[dynamic-fee]] ve [[twamm]] için \`BEFORE_SWAP_FLAG\` (bit 7), [[limit-order]] için \`AFTER_SWAP_FLAG\` (bit 6) gerekir; kötü niyetli [[hook]] ise bit 6'ya ek olarak \`AFTER_SWAP_RETURNS_DELTA_FLAG\` (\`1 << 2\`) ister ki \`afterSwap\`'tan döndürdüğü \`int128\` değeri, [[swap]] yapanın "delta"'sından düşülsün. [[dynamic-fee]] ile [[limit-order]] birlikte \`0x…00C0\` verir; kötü niyetli davranış eklenince \`0x…00C4\` olur. Bu türden gerçek [[hook]]'lar, [[swap]] dışındaki bitleri de, örneğin "initialize" geri çağrılarını da açabilir.
+
+Sayılar bir oyuncaktır: 1.000 ETH ve 2.000.000 USDC tutan sabit çarpımlı bir havuz, [[concentrated-liquidity]] matematiğinin yerini tutar; [[hook]]'un payı da düz %10'dur.`,
       },
       code: {
         lang: 'Solidity (v4-core: IHooks.sol, Hooks.sol, kısaltılmış)',
@@ -282,7 +363,7 @@ function beforeSwap(address, PoolKey calldata, SwapParams calldata, bytes callda
     },
     choose: {
       title: 'Hangisi, ne zaman?',
-      alt: 'Üç model arkada duruyor. Her birinin önünde bir kişi var; noktalı bir yol her kişiyi kendisine uyan modele götürüyor: pasif yatırımcıyı v2\'ye, aktif yöneticiyi v3\'e, özel kurallar isteyen geliştiriciyi v4\'e.',
+      alt: 'Üç model arkada duruyor. Yanan bir taban, öğrencinin yanıtlarına uyan sürümü gösteriyor; önünde bir kişi duruyor ve bir yazı nedenini söylüyor.',
       body: {
         beginner: `"En iyi" sürüm diye bir şey yok. Ne yapmak istediğine bağlı.
 
@@ -290,7 +371,9 @@ function beforeSwap(address, PoolKey calldata, SwapParams calldata, bytes callda
 - Daha fazla ücret karşılığında fiyatı izlemeye ve bandını ayarlamaya razıysan: **v3**.
 - Farklı davranan bir havuza ihtiyacın varsa ya da birçok havuzdan geçen işlemler yapıyorsan: **v4**.
 
-Yalnızca takas yapmak istiyorsan çoğu zaman seçim bile yapmazsın. Uygulama bütün sürümlerin havuzlarına bakar ve işlemini fiyatın en iyi olduğu yere gönderir.`,
+Yalnızca takas yapmak istiyorsan çoğu zaman seçim bile yapmazsın. Uygulama bütün sürümlerin havuzlarına bakar ve işlemini fiyatın en iyi olduğu yere gönderir.
+
+**Dene.** Sahnenin altındaki üç soruyu yanıtla. Yanan model, yanıtlarına uyan sürümdür; nedeni de yanında yazar. Yanıtları birer birer değiştir ve hangisinin sonucu değiştirdiğine bak.`,
         intermediate: `**Likidite sağlayan biri olarak**
 
 - **v2**: tamamen pasiftir, hiçbir zaman [[out-of-range]] olmaz ve [[lp-token]] başka birçok uygulamada kabul edilir. Sermaye getirisi düşüktür. Yeni ve küçük [[token]]'larda yaygındır.
@@ -299,7 +382,9 @@ Yalnızca takas yapmak istiyorsan çoğu zaman seçim bile yapmazsın. Uygulama 
 
 **Alıcı olarak** genellikle emrini v2, v3 ve v4 havuzlarına bölen bir "router" kullanırsın. v4 rotaları, özellikle birkaç adımlıysa ya da ETH içeriyorsa, çoğunlukla daha az [[gas]] harcar.
 
-**Geliştirici olarak** standart havuzda olmayan bir davranışa ihtiyacın varsa üzerine kuracağın sürüm v4'tür: özel ücretler, zincir üstünde [[limit-order]], [[twamm]] ya da kendi eğrin.`,
+**Geliştirici olarak** standart havuzda olmayan bir davranışa ihtiyacın varsa üzerine kuracağın sürüm v4'tür: özel ücretler, zincir üstünde [[limit-order]], [[twamm]] ya da kendi eğrin.
+
+**Dene.** Sahnenin altındaki seçici şu kuralları uygular. Özel mantık her zaman v4 demektir, çünkü [[hook]] yalnızca v4'te vardır. Özel mantık yoksa aktif bir [[liquidity-provider]] v3'e yönlendirilir. Pasif olan, oynak bir çiftte v2'yi, fiyatın dar bir aralıktan nadiren çıktığı sabit bir çiftte v3'ü alır. Bu bir tavsiye değil, kaba bir kuraldır.`,
         expert: `**v2**, değiştirilebilir ve tüm aralığa yayılan bir pozisyona ihtiyacın olduğunda hâlâ doğru araçtır: başka protokollerin kabul ettiği teminat, doğal bir fiyat aralığı olmayan küçük [[token]]'lar ya da basit bir [[twap]] kaynağı. Bedeli, dolar başına düşen \`L\`'dir.
 
 **v3**, büyük çiftlerde yılların biriktirdiği derin likiditeye ve yerleşik bir "oracle"'a sahiptir. Getiri, aralık seçimine ve bilgili akışa karşı yeniden dengelemeye bağlıdır; pasif geniş aralıklar, büyük [[swap]]'ların çevresine eklenen "just-in-time" likiditeyle seyrelir. Birçok [[liquidity-provider]] ona, değiştirilebilir pay veren yönetici sözleşmeleri üzerinden ulaşır.
@@ -312,7 +397,9 @@ v4 ile üstlendiklerin:
 - **Parçalanma**: \`(fee, tickSpacing, hooks)\` serbesttir; bir çiftin likiditesi birçok havuza dağılır ve rota bulmak zorlaşır.
 - **Yoğunlaşma**: bütün havuzların fonlarını tek bir sözleşme tutar.
 
-\`hooks = address(0)\` olan düz havuzlarda v4, daha düşük [[gas]] maliyetiyle v3 gibi davranır.`,
+\`hooks = address(0)\` olan düz havuzlarda v4, daha düşük [[gas]] maliyetiyle v3 gibi davranır.
+
+Sahnenin altındaki seçici, üç girdili kaba bir kuraldır. Uygulamada önemli olan şeyleri hesaba katmaz: çiftin likiditesinin şu an nerede durduğunu, pozisyonunun değiştirilebilir olması gerekip gerekmediğini ve [[gas]] maliyetini. v3 dediği her yerde, \`hooks = address(0)\` olan bir v4 havuzu aynı pozisyonu daha düşük [[gas]] maliyetiyle taşır; yeter ki o havuzda hacim olsun.`,
       },
     },
   },

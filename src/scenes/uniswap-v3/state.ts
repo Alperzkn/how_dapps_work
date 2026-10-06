@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { amountsForLiquidity, capitalEfficiency, inRange, liquidityForValue, priceToTick } from '../../sim/ammV3';
+import { makeBins, PATH_KINDS, poolValue, TIER_MODELS, v2Quote, walkSwap, type PathKind, type V2Quote, type WalkResult } from './logic';
 
 /** The price axis of the scene: USDC per ETH. */
 export const P_MIN = 1000;
@@ -70,3 +71,95 @@ export const usePosition = create<PositionState>((set) => ({
   setPrice: (v) => set({ price: clamp(snap(v, PRICE_STEP), P_MIN, P_MAX) }),
   reset: () => set(START),
 }));
+
+/* ---------- Step "idle": how far the price really moves ---------- */
+
+export const MOVE_MIN = 1;
+export const MOVE_MAX = 50;
+export const MOVE_STEP = 0.5;
+const MOVE_START = 7.5;
+
+interface IdleState {
+  move: number;
+  setMove: (v: number) => void;
+}
+
+export const useIdle = create<IdleState>((set) => ({
+  move: MOVE_START,
+  setMove: (v) => set({ move: clamp(snap(v, MOVE_STEP), MOVE_MIN, MOVE_MAX) }),
+}));
+
+/* ---------- Step "crossing": a pool made of ranges with different liquidity ---------- */
+
+/** Liquidity of each range, in units of POOL_UNIT. Every boundary is an initialized tick. */
+export const POOL_HEIGHTS = [0.4, 0.6, 0.9, 1.2, 1.6, 2.1, 2.6, 3, 3.4, 2.9, 2.5, 2, 1.5, 1.1, 0.8, 0.6, 0.4];
+export const POOL_UNIT = 1_000_000;
+export const POOL_BIN = 50;
+export const POOL_START = 1575;
+export const POOL_PRICE = 2000;
+export const POOL_FEE_BPS = 30;
+export const POOL_BINS = makeBins(POOL_START, POOL_BIN, POOL_HEIGHTS, POOL_UNIT);
+/** Everything the pool holds at the starting price, in USDC; the v2 pool it is compared with gets the same. */
+export const POOL_TVL = poolValue(POOL_BINS, POOL_PRICE);
+
+/** The swap size is set in USDC; a sale sends that much worth of ETH at the starting price. */
+export const SWAP_MAX = 6_000_000;
+export const SWAP_STEP = 100_000;
+const SWAP_START = 3_000_000;
+
+export interface SwapQuote {
+  /** Amount sent in, in the input token (USDC when buying, ETH when selling). */
+  input: number;
+  walk: WalkResult;
+  v2: V2Quote;
+}
+
+export function quoteSwap(size: number, buy: boolean): SwapQuote {
+  const usd = clamp(size, 0, SWAP_MAX);
+  const input = buy ? usd : usd / POOL_PRICE;
+  return { input, walk: walkSwap(POOL_BINS, POOL_PRICE, input, buy, POOL_FEE_BPS), v2: v2Quote(POOL_TVL, POOL_PRICE, input, buy, POOL_FEE_BPS) };
+}
+
+interface SwapState {
+  size: number;
+  buy: boolean;
+  setSize: (v: number) => void;
+  setBuy: (v: boolean) => void;
+}
+
+export const useSwapSim = create<SwapState>((set) => ({
+  size: SWAP_START,
+  buy: true,
+  setSize: (v) => set({ size: clamp(snap(v, SWAP_STEP), 0, SWAP_MAX) }),
+  setBuy: (buy) => set({ buy }),
+}));
+
+/* ---------- Steps "fees-nft" and "fee-day": a tier, a range width and a day of prices ---------- */
+
+export const WIDTH_MIN = 1;
+export const WIDTH_MAX = 30;
+export const WIDTH_STEP = 0.5;
+const WIDTH_START = 5;
+
+interface FeeState {
+  /** Index into TIER_MODELS. */
+  tier: number;
+  width: number;
+  path: PathKind;
+  setTier: (v: number) => void;
+  setWidth: (v: number) => void;
+  setPath: (v: PathKind) => void;
+}
+
+export const useFees = create<FeeState>((set) => ({
+  tier: 1,
+  width: WIDTH_START,
+  path: 'calm',
+  setTier: (v) => set({ tier: clamp(Math.round(v), 0, TIER_MODELS.length - 1) }),
+  setWidth: (v) => set({ width: clamp(snap(v, WIDTH_STEP), WIDTH_MIN, WIDTH_MAX) }),
+  setPath: (path) => set({ path: PATH_KINDS.includes(path) ? path : 'calm' }),
+}));
+
+/* ---------- Step "efficiency": the position was opened at this price ---------- */
+
+export const ENTRY = 2000;

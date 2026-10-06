@@ -1,7 +1,8 @@
 # How Dapps Work
 
-An interactive course on blockchains, consensus, L1 chains, dapps and Uniswap
-v2 / v3 / v4, taught through animated isometric three.js scenes.
+An interactive course on blockchains, consensus, L1 and L2 chains, smart
+contracts, tokens, dapps, Uniswap v2 / v3 / v4 and MEV, taught through animated
+isometric three.js scenes you can play with.
 
 - Three levels per lesson: Beginner, Intermediate, Expert. One switch, same scene.
 - English and Turkish. In Turkish, technical terms stay in English in quotes.

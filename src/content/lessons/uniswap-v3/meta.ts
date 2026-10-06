@@ -8,7 +8,7 @@ const meta: LessonMeta = {
     en: 'Liquidity providers choose a price range, so the same money gives far deeper markets where trading actually happens.',
     tr: 'Likidite sağlayanlar bir fiyat aralığı seçer; aynı para, alım satımın gerçekten yapıldığı yerde çok daha derin bir piyasa oluşturur.',
   },
-  steps: ['idle', 'concentrated', 'ticks', 'crossing', 'fees-nft', 'efficiency'],
+  steps: ['idle', 'concentrated', 'ticks', 'crossing', 'fees-nft', 'fee-day', 'efficiency'],
 };
 
 export default meta;

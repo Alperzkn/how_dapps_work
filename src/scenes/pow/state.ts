@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { mineStep } from '../../sim/pow';
+import { causesFork, minePeriod, rng, simulateAttack, simulateRace, splitShares, type Attempt, type Period } from './logic';
 
 export const MIN_ZEROS = 1;
 export const MAX_ZEROS = 5;
@@ -98,3 +99,112 @@ export const useMining = create<MiningState>((set, get) => {
     },
   };
 });
+
+// ---------- The other steps' experiments ----------
+
+const num = (v: number, lo: number, hi: number, step = 1) => {
+  const x = Number.isFinite(v) ? v : lo;
+  return Math.min(hi, Math.max(lo, Math.round(x / step) * step));
+};
+
+export const SHARE = { min: 1, max: 90, start: 45 };
+export const BATCH = 100;
+export const DELAY = { min: 1, max: 20, start: 2 };
+/** Seconds after your block at which miner C finds its own. */
+export const RIVAL_GAP = 5;
+export const HASHRATE = { min: 0.25, max: 4, step: 0.25, start: 2 };
+export const ATTACKER = { min: 1, max: 60, start: 30 };
+export const CONFIRMATIONS = { min: 1, max: 12, start: 6 };
+const RACE_SEED = 20_090_103;
+
+export type Rival = 'none' | 'late' | 'fork' | 'youWin' | 'rivalWins';
+
+interface LabState {
+  /** Your share of the hashrate in percent, and the blocks won so far by miner A, you and miner C. */
+  share: number;
+  wins: number[];
+  rounds: number;
+  /** Seconds a block needs to reach the other miners, and what happened to miner C's competing block. */
+  delay: number;
+  rival: Rival;
+  /** Network hashrate and difficulty, both relative to where the demo starts. */
+  hashrate: number;
+  difficulty: number;
+  periods: number;
+  last: Period | null;
+  /** Attacker's share in percent, confirmations the merchant waits for, and the attempts made. */
+  attacker: number;
+  confirmations: number;
+  attempt: Attempt | null;
+  attempts: number;
+  successes: number;
+  seed: number;
+  setShare: (percent: number) => void;
+  runBlocks: () => void;
+  resetRace: () => void;
+  setDelay: (seconds: number) => void;
+  /** Miner C finds a block; then the next block settles the fork; then everything starts over. */
+  advanceRival: () => void;
+  setHashrate: (h: number) => void;
+  nextPeriod: () => void;
+  resetRetarget: () => void;
+  setAttacker: (percent: number) => void;
+  setConfirmations: (z: number) => void;
+  raceOnce: () => void;
+}
+
+const firstBatch = (share: number) => simulateRace(splitShares(share / 100), BATCH, rng(RACE_SEED));
+
+export const useLab = create<LabState>((set) => ({
+  share: SHARE.start,
+  wins: firstBatch(SHARE.start),
+  rounds: BATCH,
+  delay: DELAY.start,
+  rival: 'none',
+  hashrate: HASHRATE.start,
+  difficulty: 1,
+  periods: 0,
+  last: null,
+  attacker: ATTACKER.start,
+  confirmations: CONFIRMATIONS.start,
+  attempt: null,
+  attempts: 0,
+  successes: 0,
+  seed: 1,
+  setShare: (percent) => {
+    const share = num(percent, SHARE.min, SHARE.max);
+    set({ share, wins: firstBatch(share), rounds: BATCH });
+  },
+  runBlocks: () =>
+    set((s) => {
+      const more = simulateRace(splitShares(s.share / 100), BATCH, rng(RACE_SEED + s.seed * 7919));
+      return { wins: s.wins.map((w, i) => w + more[i]), rounds: s.rounds + BATCH, seed: s.seed + 1 };
+    }),
+  resetRace: () => set((s) => ({ wins: firstBatch(s.share), rounds: BATCH })),
+  setDelay: (seconds) => set({ delay: num(seconds, DELAY.min, DELAY.max), rival: 'none' }),
+  advanceRival: () =>
+    set((s) => {
+      if (s.rival === 'none') return { rival: causesFork(s.delay, RIVAL_GAP) ? 'fork' : 'late' };
+      if (s.rival === 'fork') {
+        // The next block is found by you or miner A (on your block) or by miner C (on its own).
+        const shares = splitShares(SHARE.start / 100);
+        const onYours = rng(RACE_SEED + s.seed * 104_729)() < shares[0] + shares[1];
+        return { rival: onYours ? 'youWin' : 'rivalWins', seed: s.seed + 1 };
+      }
+      return { rival: 'none' };
+    }),
+  setHashrate: (h) => set({ hashrate: num(h, HASHRATE.min, HASHRATE.max, HASHRATE.step) }),
+  nextPeriod: () =>
+    set((s) => {
+      const last = minePeriod(s.difficulty, s.hashrate);
+      return { last, difficulty: last.difficulty, periods: s.periods + 1 };
+    }),
+  resetRetarget: () => set({ hashrate: HASHRATE.start, difficulty: 1, periods: 0, last: null }),
+  setAttacker: (percent) => set({ attacker: num(percent, ATTACKER.min, ATTACKER.max), attempt: null, attempts: 0, successes: 0 }),
+  setConfirmations: (z) => set({ confirmations: num(z, CONFIRMATIONS.min, CONFIRMATIONS.max), attempt: null, attempts: 0, successes: 0 }),
+  raceOnce: () =>
+    set((s) => {
+      const attempt = simulateAttack(s.attacker / 100, s.confirmations, rng(RACE_SEED + s.seed * 15_485_867));
+      return { attempt, attempts: s.attempts + 1, successes: s.successes + (attempt.caughtUp ? 1 : 0), seed: s.seed + 1 };
+    }),
+}));

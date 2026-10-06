@@ -1,59 +1,78 @@
 import { create } from 'zustand';
-import { impermanentLoss, swapV2 } from '../../sim/ammV2';
+import { MAX_BUY, MAX_DEPOSIT_ETH, MAX_DEPOSIT_USDC, MAX_TRADES, MAX_UNITS, MOVE_MAX, TOL_MAX, TOL_MIN, type Depth, type Dir } from './logic';
 
-/** The example pool: 100 ETH and 200,000 USDC, so 1 ETH = 2,000 USDC. */
-export const X0 = 100;
-export const Y0 = 200_000;
-/** The slider sells up to the whole ETH reserve again, which roughly quarters the price. */
-export const MAX_IN = 100;
-export const DEFAULT_IN = 10;
-/** Slippage tolerance used for the "minimum received" figure. */
-export const TOLERANCE = 0.005;
+const clamp = (v: number, lo: number, hi: number) => (Number.isFinite(v) ? Math.min(Math.max(v, lo), hi) : lo);
 
-const clampIn = (v: number) => (Number.isFinite(v) ? Math.min(Math.max(v, 0), MAX_IN) : 0);
+export type RiskMode = 'slippage' | 'il';
 
-export interface Quote {
-  dx: number;
-  out: number;
-  x: number;
-  y: number;
-  priceBefore: number;
-  priceAfter: number;
-  /** Average price paid: USDC received per ETH sold. */
-  paid: number;
-  impact: number;
-  minOut: number;
-  /** New pool price / old pool price. */
-  ratio: number;
-  /** Impermanent loss if the market price really moved by `ratio`. */
-  il: number;
+interface V2State {
+  /** Swap size in slider units (1 ETH or 2,000 USDC each) and the token being sold. */
+  units: number;
+  dir: Dir;
+  /** Swap step: an arbitrageur has traded the pool back toward the market price. */
+  arb: boolean;
+  /** Order-book step: ETH to market-buy and how full the book is. */
+  buy: number;
+  depth: Depth;
+  /** Pool step: the learner's deposit. `depUsdc` is used only while `unbalanced`. */
+  depEth: number;
+  depUsdc: number;
+  unbalanced: boolean;
+  removed: boolean;
+  /** Fee step: trades pushed through the pool. */
+  trades: number;
+  /** Risk step. */
+  riskMode: RiskMode;
+  tol: number;
+  move: number;
+  /** Position of the price slider, −100..100 (log scale, 0 = unchanged). */
+  ilSlider: number;
+  setUnits: (v: number) => void;
+  setDir: (d: Dir) => void;
+  setArb: (on: boolean) => void;
+  setBuy: (v: number) => void;
+  setDepth: (d: Depth) => void;
+  setDepEth: (v: number) => void;
+  setDepUsdc: (v: number) => void;
+  setUnbalanced: (on: boolean) => void;
+  setRemoved: (on: boolean) => void;
+  setTrades: (v: number) => void;
+  setRiskMode: (m: RiskMode) => void;
+  setTol: (v: number) => void;
+  setMove: (v: number) => void;
+  setIlSlider: (v: number) => void;
 }
 
-export function quote(amountIn: number): Quote {
-  const dx = clampIn(amountIn);
-  const s = swapV2(X0, Y0, dx);
-  const ratio = s.priceBefore > 0 ? s.priceAfter / s.priceBefore : 1;
-  return {
-    dx,
-    out: s.out,
-    x: s.x,
-    y: s.y,
-    priceBefore: s.priceBefore,
-    priceAfter: s.priceAfter,
-    paid: dx > 0 ? s.out / dx : s.priceBefore,
-    impact: s.impact,
-    minOut: s.out * (1 - TOLERANCE),
-    ratio,
-    il: impermanentLoss(ratio),
-  };
-}
+export const DEFAULT_UNITS = 10;
 
-interface SwapState {
-  dx: number;
-  setDx: (v: number) => void;
-}
-
-export const useSwap = create<SwapState>((set) => ({
-  dx: DEFAULT_IN,
-  setDx: (v) => set({ dx: clampIn(v) }),
+export const useV2 = create<V2State>((set) => ({
+  units: DEFAULT_UNITS,
+  dir: 'eth',
+  arb: false,
+  buy: 5,
+  depth: 'busy',
+  depEth: 10,
+  depUsdc: 10_000,
+  unbalanced: false,
+  removed: false,
+  trades: 40,
+  riskMode: 'slippage',
+  tol: 0.005,
+  move: 0.004,
+  ilSlider: 50,
+  // A new swap makes the earlier arbitrage stale.
+  setUnits: (v) => set({ units: clamp(v, 0, MAX_UNITS), arb: false }),
+  setDir: (dir) => set({ dir, arb: false }),
+  setArb: (arb) => set({ arb }),
+  setBuy: (v) => set({ buy: clamp(v, 0, MAX_BUY) }),
+  setDepth: (depth) => set({ depth }),
+  setDepEth: (v) => set({ depEth: clamp(v, 0, MAX_DEPOSIT_ETH), removed: false }),
+  setDepUsdc: (v) => set({ depUsdc: clamp(v, 0, MAX_DEPOSIT_USDC), removed: false }),
+  setUnbalanced: (unbalanced) => set({ unbalanced, removed: false }),
+  setRemoved: (removed) => set({ removed }),
+  setTrades: (v) => set({ trades: Math.round(clamp(v, 0, MAX_TRADES)) }),
+  setRiskMode: (riskMode) => set({ riskMode }),
+  setTol: (v) => set({ tol: clamp(v, TOL_MIN, TOL_MAX) }),
+  setMove: (v) => set({ move: clamp(v, 0, MOVE_MAX) }),
+  setIlSlider: (v) => set({ ilSlider: clamp(v, -100, 100) }),
 }));
