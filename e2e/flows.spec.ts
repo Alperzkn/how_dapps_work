@@ -94,6 +94,23 @@ test('moving to the next lesson keeps the 3D scene (old canvas teardown is not a
   expect(errors).toEqual([]);
 });
 
+test('dragging slides the view to off-screen parts, and reset brings it back', async ({ page }) => {
+  await openLesson(page, '/en/lesson/transactions/1?level=intermediate');
+  const label = page.locator('.scene-label', { hasText: "Alice's wallet" });
+  await page.waitForTimeout(800);
+  const start = (await label.boundingBox())!;
+  const canvas = (await page.locator('.scene-canvas canvas').boundingBox())!;
+  await page.mouse.move(canvas.x + 600, canvas.y + 400);
+  await page.mouse.down();
+  await page.mouse.move(canvas.x + 300, canvas.y + 400, { steps: 8 });
+  await page.mouse.up();
+  await page.waitForTimeout(300);
+  const moved = (await label.boundingBox())!;
+  expect(start.x - moved.x).toBeGreaterThan(200);
+  await page.getByRole('button', { name: 'Reset view' }).click();
+  await expect.poll(async () => Math.abs((await label.boundingBox())!.x - start.x), { timeout: 5000 }).toBeLessThan(3);
+});
+
 test('presentation mode is driven from the keyboard', async ({ page }) => {
   await openLesson(page, '/en/lesson/blockchain/2?level=beginner');
   // Assert on what is rendered (the caption counter), not just the URL, before the next key.

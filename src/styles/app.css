@@ -567,6 +567,32 @@ button {
   box-shadow: 0 2px 8px var(--shadow);
 }
 
+.scene-hint {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 120px;
+  z-index: 6;
+  font-size: 0.78rem;
+  color: var(--ink-soft);
+  pointer-events: none;
+}
+
+/* Phones have no room to spare, and dragging with a finger is the obvious thing to try. */
+@media (max-width: 639px) {
+  .scene-hint {
+    display: none;
+  }
+}
+
+.scene-canvas canvas {
+  cursor: grab;
+}
+
+.scene-canvas canvas:active {
+  cursor: grabbing;
+}
+
 .present-btn {
   display: none;
 }

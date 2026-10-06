@@ -1,7 +1,7 @@
 import { OrbitControls } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
-import { OrthographicCamera, Vector3 } from 'three';
+import { MOUSE, OrthographicCamera, TOUCH, Vector3 } from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { useScene } from './context';
 import type { StepView } from './types';
@@ -11,8 +11,14 @@ const ISO_AZIMUTH = Math.PI / 4;
 // Scenes are composed for a frame 17.5 world units wide by 14 tall at zoom 1.
 const FRAME_HEIGHT = 14;
 const FRAME_ASPECT = 1.25;
+// How far the user may slide the view away from where the step points it.
+const MAX_PAN = 14;
 
-/** Eases the camera to each step's view; the user may rotate and zoom within limits. */
+/**
+ * Eases the camera to each step's view. The user may slide the view (drag, or one finger),
+ * rotate it (right-drag, or two fingers) and zoom, all within limits; a step change or
+ * the reset button brings it back.
+ */
 export function CameraRig({ view, resetKey }: { view: StepView; resetKey: number }) {
   const { reducedMotion } = useScene();
   const camera = useThree((s) => s.camera) as OrthographicCamera;
@@ -54,16 +60,27 @@ export function CameraRig({ view, resetKey }: { view: StepView; resetKey: number
     <OrbitControls
       ref={controls}
       makeDefault
-      enablePan={false}
       enableDamping={false}
+      mouseButtons={{ LEFT: MOUSE.PAN, MIDDLE: MOUSE.DOLLY, RIGHT: MOUSE.ROTATE }}
+      touches={{ ONE: TOUCH.PAN, TWO: TOUCH.DOLLY_ROTATE }}
       minAzimuthAngle={ISO_AZIMUTH - Math.PI / 6}
       maxAzimuthAngle={ISO_AZIMUTH + Math.PI / 6}
       minPolarAngle={0.62}
       maxPolarAngle={1.25}
-      minZoom={zoom * 0.6}
+      minZoom={zoom * 0.45}
       maxZoom={zoom * 2.5}
       onStart={() => {
         easing.current = false;
+      }}
+      onChange={() => {
+        const c = controls.current;
+        if (!c || easing.current) return;
+        const away = c.target.clone().sub(target);
+        if (away.length() <= MAX_PAN) return;
+        // Pull the view back to the edge of the allowed area, moving camera and target together.
+        const fix = away.clone().setLength(MAX_PAN).sub(away);
+        c.target.add(fix);
+        camera.position.add(fix);
       }}
     />
   );

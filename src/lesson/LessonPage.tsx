@@ -143,6 +143,8 @@ export function LessonPage() {
           <p className="scene-loading">{ui(lang, 'sceneLoading')}</p>
         )}
 
+        {!noGl && !present && <p className="scene-hint">{ui(lang, 'dragHint')}</p>}
+
         <div className="scene-tools">
           {!noGl && (
             <button type="button" className="icon-btn" onClick={() => setResetKey((k) => k + 1)} aria-label={ui(lang, 'resetView')} title={ui(lang, 'resetView')}>

@@ -57,7 +57,7 @@ const en = {
   sceneUnavailable: '3D view is unavailable on this device. Showing a still image instead.',
   sceneError: 'The 3D scene could not be loaded.',
   retry: 'Try again',
-  dragHint: 'Drag to rotate · pinch or scroll to zoom',
+  dragHint: 'Drag to move the view · scroll or pinch to zoom · right-drag to rotate',
   termHint: 'Dotted words are explained when you tap or hover them.',
   termCount: 'terms',
 };
@@ -121,7 +121,7 @@ const tr: Record<Key, string> = {
   sceneUnavailable: 'Bu cihazda 3B görünüm kullanılamıyor. Yerine sabit bir görsel gösteriliyor.',
   sceneError: '3B sahne yüklenemedi.',
   retry: 'Tekrar dene',
-  dragHint: 'Döndürmek için sürükle · yakınlaştırmak için kıstır ya da kaydır',
+  dragHint: 'Görünümü kaydırmak için sürükle · yakınlaştırmak için kaydır ya da kıstır · döndürmek için sağ tuşla sürükle',
   termHint: 'Noktalı altı çizili kelimelere dokununca ya da üzerine gelince açıklaması görünür.',
   termCount: 'terim',
 };
