@@ -169,7 +169,7 @@ There are two very different kinds of request:
 So a typical page reads balances and prices constantly through read calls, and only sends a [[transaction]] when you press a button and confirm in the [[wallet]].`,
         expert: `[[json-rpc]] 2.0 is the wire format: \`{ jsonrpc, id, method, params }\` over HTTPS or WebSocket. The methods a dapp uses most:
 
-- \`eth_call\`: execute a message call against the state of a given block (\`"latest"\` by default) without creating a [[transaction]]. Used for \`view\` functions and for simulating state-changing ones.
+- \`eth_call\`: execute a message call against the state of a given block (usually \`"latest"\`) without creating a [[transaction]]. Used for \`view\` functions and for simulating state-changing ones.
 - \`eth_estimateGas\`: search for a [[gas]] limit that lets the call succeed.
 - \`eth_sendRawTransaction\`: submit the signed, serialized transaction; returns its hash immediately, long before inclusion.
 - \`eth_getTransactionReceipt\`: \`null\` until mined, then \`status\`, \`gasUsed\`, \`logs\`.
@@ -221,7 +221,7 @@ The [[erc-20]] allowance flow that most dapps rely on:
 Edge cases worth knowing: some tokens return no \`bool\` (use a safe-transfer wrapper), some take a fee on transfer so the received amount is lower than \`amount\`, and changing a non-zero allowance directly can be front-run. A revert rolls back state and logs for the failing call frame, but the sender still pays for the [[gas]] consumed.`,
       },
       code: {
-        lang: 'Solidity',
+        lang: 'Solidity (simplified ERC-20)',
         source: `// calldata for transfer(0x2222…2222, 10 * 10**18):
 // 0xa9059cbb                                                        selector
 // 0000000000000000000000002222222222222222222222222222222222222222  to

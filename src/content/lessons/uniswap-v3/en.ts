@@ -44,7 +44,7 @@ But the price of ETH does not visit every price. Most days it moves a few percen
 
 Trades only use the [[reserves]] near the current price. For ETH at 2,000 USDC, moving the price anywhere inside 1,850–2,150 uses less than 4% of the pool's value. The other 96% earns nothing in that range and only matters if ETH leaves it.
 
-For stablecoin pairs it is more extreme. The v3 whitepaper notes that a v2 DAI/USDC pool keeps only about 0.5% of its capital for trades between 0.99 and 1.01, where nearly all its volume happens.`,
+For stablecoin pairs it is more extreme. Uniswap's v3 announcement notes that a v2 DAI/USDC pool keeps only about 0.5% of its capital for trades between 0.99 and 1.01, where nearly all its volume happens.`,
         expert: `A v2 position is liquidity on the whole curve \`x · y = L²\`, with \`x = L / √P\` and \`y = L · √P\`. To let the price move from \`P\` to \`P'\` the pool only needs \`Δy = L · (√P' − √P)\`; everything else is collateral for prices outside that interval.
 
 The share of capital that is actually needed for a range \`[Pa, Pb]\` around \`P\` is
@@ -88,18 +88,22 @@ Below \`Pa\` the position is all token0 (\`y = 0\`); above \`Pb\` it is all toke
       code: {
         lang: 'Solidity (simplified from LiquidityAmounts.sol)',
         source: `// sqrt prices are Q64.96 numbers: sqrtP * 2^96
-function getAmount0ForLiquidity(uint160 sqrtA, uint160 sqrtB, uint128 L)
-    pure returns (uint256 amount0)
+function getAmount0ForLiquidity(uint160 sqrtRatioAX96, uint160 sqrtRatioBX96, uint128 liquidity)
+    internal pure returns (uint256 amount0)
 {
     // x = L * (1/sqrtA - 1/sqrtB)
-    return mulDiv(uint256(L) << 96, sqrtB - sqrtA, sqrtB) / sqrtA;
+    return FullMath.mulDiv(
+        uint256(liquidity) << FixedPoint96.RESOLUTION,   // RESOLUTION = 96
+        sqrtRatioBX96 - sqrtRatioAX96,
+        sqrtRatioBX96
+    ) / sqrtRatioAX96;
 }
 
-function getAmount1ForLiquidity(uint160 sqrtA, uint160 sqrtB, uint128 L)
-    pure returns (uint256 amount1)
+function getAmount1ForLiquidity(uint160 sqrtRatioAX96, uint160 sqrtRatioBX96, uint128 liquidity)
+    internal pure returns (uint256 amount1)
 {
     // y = L * (sqrtB - sqrtA)
-    return mulDiv(L, sqrtB - sqrtA, 1 << 96);
+    return FullMath.mulDiv(liquidity, sqrtRatioBX96 - sqrtRatioAX96, FixedPoint96.Q96);   // Q96 = 2^96
 }`,
       },
     },
@@ -126,7 +130,7 @@ The price is always \`token1/token0\` in raw units, with tokens ordered by addre
 Per-tick state lives in \`ticks[i]\` (\`liquidityGross\`, \`liquidityNet\`, fee growth outside). Finding the next initialized tick uses \`tickBitmap\`: one bit per usable tick, packed into 256-bit words keyed by \`int16(tick / tickSpacing >> 8)\`.`,
       },
       code: {
-        lang: 'Solidity (UniswapV3Pool.sol)',
+        lang: 'Solidity (UniswapV3Pool.sol, abridged)',
         source: `struct Slot0 {
     uint160 sqrtPriceX96;  // sqrt(token1/token0) * 2^96
     int24   tick;          // floor(log_1.0001(price))
@@ -180,10 +184,12 @@ Fees never touch the reserves used for pricing. Each step adds \`feeAmount · 2^
 
     // trade inside the current range with the active liquidity
     (state.sqrtPriceX96, step.amountIn, step.amountOut, step.feeAmount) =
-        SwapMath.computeSwapStep(state.sqrtPriceX96, target, state.liquidity,
-                                 state.amountSpecifiedRemaining, fee);
+        SwapMath.computeSwapStep(state.sqrtPriceX96,
+                                 sqrtRatioTargetX96,   // the next tick's price, or the price limit
+                                 state.liquidity, state.amountSpecifiedRemaining, fee);
 
-    state.feeGrowthGlobalX128 += mulDiv(step.feeAmount, Q128, state.liquidity);
+    state.feeGrowthGlobalX128 +=
+        FullMath.mulDiv(step.feeAmount, FixedPoint128.Q128, state.liquidity);
 
     if (state.sqrtPriceX96 == step.sqrtPriceNextX96) {       // reached the tick
         if (step.initialized) {
@@ -216,9 +222,9 @@ The tier also fixes the [[tick-spacing]]: 1, 10, 60 and 200.
 Because each position has its own range, v2's fungible [[lp-token]] no longer works. A position is an [[nft-position]], an ERC-721 token. Fees are not added back into the position as in v2: they pile up separately and the owner collects them.`,
         expert: `The factory maps \`(token0, token1, fee)\` to one pool and \`feeAmountTickSpacing\` gives 100 → 1, 500 → 10, 3000 → 60, 10000 → 200 (fees in hundredths of a basis point). The 0.01% tier was added later by governance through \`enableFeeAmount\`.
 
-The core pool knows nothing about NFTs. It keys positions by \`keccak256(owner, tickLower, tickUpper)\` and stores \`liquidity\`, \`feeGrowthInside0LastX128\`, \`feeGrowthInside1LastX128\` and \`tokensOwed\`. For most users the \`owner\` is the periphery contract \`NonfungiblePositionManager\`, which mints an [[nft-position]] (ERC-721) per position and records \`tokenId → (pool, tickLower, tickUpper, liquidity, …)\`.
+The core pool knows nothing about NFTs. It keys positions by \`keccak256(abi.encodePacked(owner, tickLower, tickUpper))\` and stores \`liquidity\`, \`feeGrowthInside0LastX128\`, \`feeGrowthInside1LastX128\`, \`tokensOwed0\` and \`tokensOwed1\`. For most users the \`owner\` is the periphery contract \`NonfungiblePositionManager\`, which mints an [[nft-position]] (ERC-721) per position and records \`tokenId → (pool, tickLower, tickUpper, liquidity, …)\`.
 
-Fees owed are \`liquidity · (feeGrowthInside − feeGrowthInsideLast) / 2^128\` per token. They are credited to \`tokensOwed\` when the position is touched and paid out by \`collect()\`. They do not compound; reinvesting means adding liquidity again.
+Fees owed are \`liquidity · (feeGrowthInside − feeGrowthInsideLast) / 2^128\` per token. They are credited to \`tokensOwed0\` / \`tokensOwed1\` when the position is touched and paid out by \`collect()\`. They do not compound; reinvesting means adding liquidity again.
 
 Non-fungible positions cannot be used directly where an [[erc-20]] is expected. That gap is filled by vaults that manage a v3 position and issue fungible shares.`,
       },

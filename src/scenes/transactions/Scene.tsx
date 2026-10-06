@@ -263,7 +263,7 @@ export default function Scene({ stepId, level, labels }: SceneProps) {
           {labels.verify}
         </Label>
         <Label position={[0.6, -0.5, 2.4]} show={isSign} minLevel="expert" tone="mono">
-          ecrecover(h, r, s, v) → 0x71C7…
+          ecrecover(h, v, r, s) → 0x71C7…
         </Label>
       </Anim>
 

@@ -48,7 +48,7 @@ Oysa ETH'nin fiyatı her yere uğramaz; çoğu gün birkaç yüzde oynar. Tabaka
 
 Alım satımlar yalnızca güncel fiyatın yakınındaki [[reserves]] kısmını kullanır. ETH 2.000 USDC iken fiyatı 1.850–2.150 arasında herhangi bir yere götürmek, havuzun değerinin %4'ünden azını kullanır. Kalan %96 bu aralıkta hiçbir şey kazanmaz; ancak ETH aralıktan çıkarsa işe yarar.
 
-"Stablecoin" çiftlerinde durum daha da uçtadır. v3 "whitepaper"'ı, v2'deki bir DAI/USDC havuzunun sermayesinin yalnızca %0,5 kadarını 0,99 ile 1,01 arasındaki işlemlere ayırdığını belirtir; oysa hacmin neredeyse tamamı orada döner.`,
+"Stablecoin" çiftlerinde durum daha da uçtadır. Uniswap'in v3 duyuru yazısı, v2'deki bir DAI/USDC havuzunun sermayesinin yalnızca %0,5 kadarını 0,99 ile 1,01 arasındaki işlemlere ayırdığını belirtir; oysa hacmin neredeyse tamamı orada döner.`,
         expert: `v2'deki bir pozisyon, \`x · y = L²\` eğrisinin tamamına yayılmış likiditedir: \`x = L / √P\` ve \`y = L · √P\`. Fiyatın \`P\`'den \`P'\`'ye gitmesi için havuzun yalnızca \`Δy = L · (√P' − √P)\` kadarına ihtiyacı vardır; geri kalanı o aralığın dışındaki fiyatlar için tutulan teminattır.
 
 \`P\` çevresindeki bir \`[Pa, Pb]\` aralığı için gerçekten gereken sermaye payı:
@@ -92,18 +92,22 @@ Yatırılan değer sabitken aralık daraldıkça \`L\` büyür. Tüm aralığa g
       code: {
         lang: 'Solidity (LiquidityAmounts.sol, sadeleştirilmiş)',
         source: `// karekök fiyatlar Q64.96 sayılardır: sqrtP * 2^96
-function getAmount0ForLiquidity(uint160 sqrtA, uint160 sqrtB, uint128 L)
-    pure returns (uint256 amount0)
+function getAmount0ForLiquidity(uint160 sqrtRatioAX96, uint160 sqrtRatioBX96, uint128 liquidity)
+    internal pure returns (uint256 amount0)
 {
     // x = L * (1/sqrtA - 1/sqrtB)
-    return mulDiv(uint256(L) << 96, sqrtB - sqrtA, sqrtB) / sqrtA;
+    return FullMath.mulDiv(
+        uint256(liquidity) << FixedPoint96.RESOLUTION,   // RESOLUTION = 96
+        sqrtRatioBX96 - sqrtRatioAX96,
+        sqrtRatioBX96
+    ) / sqrtRatioAX96;
 }
 
-function getAmount1ForLiquidity(uint160 sqrtA, uint160 sqrtB, uint128 L)
-    pure returns (uint256 amount1)
+function getAmount1ForLiquidity(uint160 sqrtRatioAX96, uint160 sqrtRatioBX96, uint128 liquidity)
+    internal pure returns (uint256 amount1)
 {
     // y = L * (sqrtB - sqrtA)
-    return mulDiv(L, sqrtB - sqrtA, 1 << 96);
+    return FullMath.mulDiv(liquidity, sqrtRatioBX96 - sqrtRatioAX96, FixedPoint96.Q96);   // Q96 = 2^96
 }`,
       },
     },
@@ -130,7 +134,7 @@ Fiyat her zaman ham birimlerle \`token1/token0\`'dır ve [[token]]'lar adrese g�
 Her [[tick]]'in durumu \`ticks[i]\` içinde tutulur (\`liquidityGross\`, \`liquidityNet\`, dışarıdaki ücret büyümesi). Bir sonraki "initialized tick", \`tickBitmap\` ile bulunur: kullanılabilir her [[tick]] için bir bit, \`int16(tick / tickSpacing >> 8)\` anahtarlı 256 bitlik kelimelere paketlenir.`,
       },
       code: {
-        lang: 'Solidity (UniswapV3Pool.sol)',
+        lang: 'Solidity (UniswapV3Pool.sol, kısaltılmış)',
         source: `struct Slot0 {
     uint160 sqrtPriceX96;  // sqrt(token1/token0) * 2^96
     int24   tick;          // floor(log_1.0001(fiyat))
@@ -184,10 +188,12 @@ Bir [[tick]]'teki \`liquidityNet\`, alt sınırı o [[tick]] olan pozisyonlar i�
 
     // güncel aralığın içinde, aktif likiditeyle takas
     (state.sqrtPriceX96, step.amountIn, step.amountOut, step.feeAmount) =
-        SwapMath.computeSwapStep(state.sqrtPriceX96, target, state.liquidity,
-                                 state.amountSpecifiedRemaining, fee);
+        SwapMath.computeSwapStep(state.sqrtPriceX96,
+                                 sqrtRatioTargetX96,   // sıradaki tick'in fiyatı ya da fiyat sınırı
+                                 state.liquidity, state.amountSpecifiedRemaining, fee);
 
-    state.feeGrowthGlobalX128 += mulDiv(step.feeAmount, Q128, state.liquidity);
+    state.feeGrowthGlobalX128 +=
+        FullMath.mulDiv(step.feeAmount, FixedPoint128.Q128, state.liquidity);
 
     if (state.sqrtPriceX96 == step.sqrtPriceNextX96) {       // tick'e ulaşıldı
         if (step.initialized) {
@@ -220,9 +226,9 @@ Kademe aynı zamanda [[tick-spacing]] değerini de belirler: 1, 10, 60 ve 200.
 Her pozisyonun aralığı kendine ait olduğu için v2'nin birbirinin yerine geçebilen [[lp-token]]'ı artık işe yaramaz. Bir pozisyon bir [[nft-position]]'dır, yani bir ERC-721 [[token]]'dır. Ücretler v2'deki gibi pozisyona geri eklenmez: ayrı bir yerde birikir ve sahibi onları kendisi toplar.`,
         expert: `"Factory", \`(token0, token1, fee)\` üçlüsünü tek bir havuza eşler; \`feeAmountTickSpacing\` ise 100 → 1, 500 → 10, 3000 → 60, 10000 → 200 değerlerini verir (ücretler "basis point"'in yüzde biri cinsindendir). %0,01 kademesi sonradan yönetişim kararıyla, \`enableFeeAmount\` üzerinden eklendi.
 
-Çekirdek havuz "NFT" diye bir şey bilmez. Pozisyonları \`keccak256(owner, tickLower, tickUpper)\` ile anahtarlar ve \`liquidity\`, \`feeGrowthInside0LastX128\`, \`feeGrowthInside1LastX128\` ile \`tokensOwed\` değerlerini saklar. Çoğu kullanıcı için \`owner\`, çevre sözleşmesi \`NonfungiblePositionManager\`'dır; bu sözleşme her pozisyon için bir [[nft-position]] (ERC-721) basar ve \`tokenId → (pool, tickLower, tickUpper, liquidity, …)\` kaydını tutar.
+Çekirdek havuz "NFT" diye bir şey bilmez. Pozisyonları \`keccak256(abi.encodePacked(owner, tickLower, tickUpper))\` ile anahtarlar ve \`liquidity\`, \`feeGrowthInside0LastX128\`, \`feeGrowthInside1LastX128\`, \`tokensOwed0\` ve \`tokensOwed1\` değerlerini saklar. Çoğu kullanıcı için \`owner\`, çevre sözleşmesi \`NonfungiblePositionManager\`'dır; bu sözleşme her pozisyon için bir [[nft-position]] (ERC-721) basar ve \`tokenId → (pool, tickLower, tickUpper, liquidity, …)\` kaydını tutar.
 
-Alacak ücret, her [[token]] için \`liquidity · (feeGrowthInside − feeGrowthInsideLast) / 2^128\` kadardır. Pozisyona dokunulduğunda \`tokensOwed\`'a yazılır ve \`collect()\` ile ödenir. Bileşik getiri oluşmaz; yeniden yatırmak için tekrar likidite eklemek gerekir.
+Alacak ücret, her [[token]] için \`liquidity · (feeGrowthInside − feeGrowthInsideLast) / 2^128\` kadardır. Pozisyona dokunulduğunda \`tokensOwed0\` / \`tokensOwed1\` alanlarına yazılır ve \`collect()\` ile ödenir. Bileşik getiri oluşmaz; yeniden yatırmak için tekrar likidite eklemek gerekir.
 
 Birbirinin yerine geçemeyen pozisyonlar, bir [[erc-20]] beklenen yerlerde doğrudan kullanılamaz. Bu boşluğu, bir v3 pozisyonunu yönetip karşılığında değiştirilebilir pay veren "vault" sözleşmeleri doldurur.`,
       },

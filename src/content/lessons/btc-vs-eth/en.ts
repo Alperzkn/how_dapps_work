@@ -212,14 +212,14 @@ Ethereum has no such ceiling. New [[ether]] is paid out to the validators who se
 
 **Supply.** Bitcoin's [[block-reward]] began at 50 BTC and halves every 210,000 blocks: 25, 12.5, 6.25 and, since April 2024, 3.125 BTC. Adding all of those up gives just under 21 million, reached around the year 2140. After that, miners are paid by fees alone.
 
-Ethereum issues new [[ether]] to validators as a [[staking]] reward. The amount depends on how much is staked, and is well under 1% of the supply per year (roughly, as of 2026). On the other side, [[eip-1559]] burns the base fee of every transaction. When the network is busy the burn can exceed issuance and the supply shrinks; when it is quiet the supply grows slowly.
+Ethereum issues new [[ether]] to validators as a [[staking]] reward. The amount depends on how much is staked, and is a little under 1% of the supply per year (roughly, as of 2026). On the other side, [[eip-1559]] burns the base fee of every transaction. When the network is busy the burn can exceed issuance and the supply shrinks; when it is quiet the supply grows slowly.
 
 One policy is fixed in advance and independent of use. The other responds to how many people stake and how much the chain is used.`,
         expert: `Bitcoin's subsidy at height \`h\` is \`50 BTC >> ⌊h / 210,000⌋\`, in integer [[satoshi|satoshis]] (1 BTC = 10^8), so the total converges to 20,999,999.9769 BTC and the subsidy reaches zero after 33 halvings. Block intervals are exponentially distributed around the 10-minute target; the [[target]] is retuned every 2,016 blocks, limited to a factor of 4 per adjustment. Settlement is probabilistic: the chance of a [[reorg]] falls geometrically with depth, hence the convention of 6 [[confirmation|confirmations]].
 
 Ethereum's 12-second [[slot]] is a schedule, not an average: a missed slot simply has no block. [[finality]] comes from [[casper-ffg]] once two consecutive [[epoch|epochs]] are justified, about 12.8 minutes in normal operation.
 
-Issuance scales with the square root of total stake: the base reward per validator is proportional to \`1 / √(total staked)\`, so total issuance grows as \`√(total staked)\`. With roughly a quarter to a third of all ether staked (as of 2026) this is on the order of a million ETH per year or less. Net change is
+Issuance scales with the square root of total stake: the base reward per staked ether is proportional to \`1 / √(total staked)\`, so total issuance grows as \`√(total staked)\`. With a little over a third of all ether staked (as of 2026) this is on the order of a million ETH per year. Net change is
 
 \`Δsupply = issuance − Σ (baseFee × gasUsed) − blob fee burn\`
 

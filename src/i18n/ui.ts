@@ -2,7 +2,11 @@ import type { Lang } from '../types';
 
 const en = {
   appName: 'How Dapps Work',
-  tagline: 'Blockchains, consensus and Uniswap, explained with moving isometric models. Pick your level and switch it any time.',
+  tagline: 'Eleven lessons, from the first block to Uniswap v4, each one a moving model you can step through. Pick a depth and change it whenever you like.',
+  heroTitle: 'See how a blockchain actually works',
+  lessonsDone: 'lessons completed',
+  lessonComplete: 'Lesson complete',
+  blockAdded: 'One more block on your chain.',
   start: 'Start learning',
   continue: 'Continue',
   lessons: 'Lessons',
@@ -66,7 +70,11 @@ type Key = keyof typeof en;
 
 const tr: Record<Key, string> = {
   appName: 'How Dapps Work',
-  tagline: '"Blockchain", "consensus" ve Uniswap; hareketli izometrik modellerle anlatılıyor. Seviyeni seç, istediğin an değiştir.',
+  tagline: 'İlk "block"tan Uniswap v4\'e on bir ders; her biri adım adım ilerletebileceğin hareketli bir model. Bir derinlik seç, istediğin an değiştir.',
+  heroTitle: '"Blockchain" gerçekte nasıl çalışır, gör',
+  lessonsDone: 'ders tamamlandı',
+  lessonComplete: 'Ders tamamlandı',
+  blockAdded: 'Zincirine bir "block" daha eklendi.',
   start: 'Öğrenmeye başla',
   continue: 'Devam et',
   lessons: 'Dersler',

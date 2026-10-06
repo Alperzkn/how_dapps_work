@@ -16,11 +16,15 @@ export function StepControls({ lang, index, titles, onGo }: Props) {
       <button type="button" className="btn step-prev" onClick={() => onGo(index - 1)} disabled={index === 0}>
         <IconLeft />
         <span>{ui(lang, 'prev')}</span>
+        <kbd aria-hidden="true">←</kbd>
       </button>
+      {/* The steps drawn as a small chain: each one a block linked to the next. */}
       <ol className="step-dots" aria-label={`${ui(lang, 'step')} ${index + 1} ${ui(lang, 'of')} ${titles.length}`}>
         {titles.map((title, i) => (
-          <li key={i}>
-            <button type="button" aria-label={`${ui(lang, 'step')} ${i + 1}: ${title}`} aria-current={i === index ? 'step' : undefined} data-past={i < index || undefined} onClick={() => onGo(i)} />
+          <li key={i} data-past={i < index || undefined}>
+            <button type="button" title={title} aria-label={`${ui(lang, 'step')} ${i + 1}: ${title}`} aria-current={i === index ? 'step' : undefined} data-past={i < index || undefined} onClick={() => onGo(i)}>
+              <span>{i + 1}</span>
+            </button>
           </li>
         ))}
       </ol>
@@ -29,6 +33,7 @@ export function StepControls({ lang, index, titles, onGo }: Props) {
       </span>
       <button type="button" className="btn btn-primary step-next" onClick={() => onGo(index + 1)} disabled={index === last}>
         <span>{ui(lang, 'next')}</span>
+        <kbd aria-hidden="true">→</kbd>
         <IconRight />
       </button>
     </div>

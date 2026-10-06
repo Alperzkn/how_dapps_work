@@ -67,7 +67,7 @@ Because \`fee\`, \`tickSpacing\` and \`hooks\` are all part of the key, they are
 The [[singleton]] holds the tokens of all pools in one balance per currency. Which pool owns what is pure accounting, and that is what makes the next step possible.`,
       },
       code: {
-        lang: 'Solidity (v4-core)',
+        lang: 'Solidity (v4-core, abridged)',
         source: `struct PoolKey {
     Currency currency0;    // the lower address; address(0) is native ETH
     Currency currency1;
@@ -155,7 +155,7 @@ A hook only implements the points it needs. Examples that have been built:
 - a price oracle, which v3 had built in and v4 leaves to hooks.
 
 A hook is code that touches your trade or your liquidity. Whoever uses a pool has to trust its hook as well as Uniswap.`,
-        expert: `Which callbacks a [[hook]] receives is encoded in its **address**. The lowest 14 bits are permission flags, from \`BEFORE_INITIALIZE_FLAG = 1 << 13\` down to \`AFTER_REMOVE_LIQUIDITY_RETURNS_DELTA_FLAG = 1 << 0\`; \`BEFORE_SWAP_FLAG\` is \`1 << 7\` and \`AFTER_SWAP_FLAG\` is \`1 << 6\`. The [[pool-manager]] tests \`uint160(address(key.hooks)) & flag\` and skips the call when the bit is clear, so no storage read is needed. Deployers mine a \`CREATE2\` salt until the address has the right bits, and \`initialize\` rejects a hook whose address does not match what it implements.
+        expert: `Which callbacks a [[hook]] receives is encoded in its **address**. The lowest 14 bits are permission flags, from \`BEFORE_INITIALIZE_FLAG = 1 << 13\` down to \`AFTER_REMOVE_LIQUIDITY_RETURNS_DELTA_FLAG = 1 << 0\`; \`BEFORE_SWAP_FLAG\` is \`1 << 7\` and \`AFTER_SWAP_FLAG\` is \`1 << 6\`. The [[pool-manager]] tests \`uint160(address(key.hooks)) & flag\` and skips the call when the bit is clear, so no storage read is needed. Deployers mine a \`CREATE2\` salt until the address has the right bits. The manager does not check that the contract really implements the flagged callbacks: hooks normally verify their own address in the constructor (\`Hooks.validateHookPermissions\`), and \`initialize\` only rejects inconsistent flag combinations with \`HookAddressNotValid\`.
 
 Each callback must return its own selector. \`beforeSwap\` additionally returns a \`BeforeSwapDelta\` and a \`uint24\` fee override. With the \`*_RETURNS_DELTA\` flags a hook may take or supply part of the swap itself, which is how custom curves and hook-owned liquidity are built on top of the standard pool.
 
@@ -164,13 +164,13 @@ Hooks run inside the caller's \`unlock\`, so they take part in [[flash-accountin
 The risks are real. A hook can be upgradeable, can charge its own fees, and one with the remove-liquidity callbacks can make withdrawals revert. Every distinct \`hooks\` address is also a distinct pool, so liquidity for a pair is split across more pools than in v3.`,
       },
       code: {
-        lang: 'Solidity (v4-core: IHooks.sol, Hooks.sol)',
+        lang: 'Solidity (v4-core: IHooks.sol, Hooks.sol, abridged)',
         source: `function beforeSwap(
     address sender,
     PoolKey calldata key,
     SwapParams calldata params,
     bytes calldata hookData
-) external returns (bytes4 selector, BeforeSwapDelta delta, uint24 lpFeeOverride);
+) external returns (bytes4, BeforeSwapDelta, uint24);   // selector, hook's delta, LP fee override
 
 function afterSwap(
     address sender,
@@ -178,11 +178,11 @@ function afterSwap(
     SwapParams calldata params,
     BalanceDelta delta,
     bytes calldata hookData
-) external returns (bytes4 selector, int128 hookDelta);
+) external returns (bytes4, int128);   // selector, hook's delta
 
 // permissions live in the low bits of the hook's address
-uint160 constant BEFORE_SWAP_FLAG = 1 << 7;
-uint160 constant AFTER_SWAP_FLAG  = 1 << 6;
+uint160 internal constant BEFORE_SWAP_FLAG = 1 << 7;
+uint160 internal constant AFTER_SWAP_FLAG = 1 << 6;
 // an address ending in ...00C0 gets exactly these two callbacks`,
       },
     },

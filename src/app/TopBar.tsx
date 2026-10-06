@@ -1,8 +1,11 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type MouseEvent } from 'react';
+import { flushSync } from 'react-dom';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ui } from '../i18n/ui';
+import { lessons } from '../content/registry';
 import { useStore } from '../state/store';
+import { applyTheme } from '../theme/applyTheme';
 import { LANGS, type Lang } from '../types';
 import { IconBook, IconClose, IconGear, IconMenu, IconMoon, IconSun, Logo } from './icons';
 import { LessonList } from './LessonList';
@@ -33,8 +36,21 @@ function ThemeToggle({ withLabel = false }: { withLabel?: boolean }) {
   const theme = useStore((s) => s.theme);
   const setTheme = useStore((s) => s.setTheme);
   const next = theme === 'light' ? 'dark' : 'light';
+  // Where supported, the new theme spreads out in a circle from the button that was pressed.
+  const toggle = (e: MouseEvent) => {
+    const apply = () => {
+      flushSync(() => setTheme(next));
+      applyTheme(next);
+    };
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!document.startViewTransition || still) return apply();
+    const root = document.documentElement;
+    root.style.setProperty('--vt-x', `${e.clientX}px`);
+    root.style.setProperty('--vt-y', `${e.clientY}px`);
+    document.startViewTransition(apply);
+  };
   return (
-    <button type="button" className={withLabel ? 'btn' : 'icon-btn'} onClick={() => setTheme(next)} aria-label={`${ui(lang, 'theme')}: ${ui(lang, next)}`}>
+    <button type="button" className={withLabel ? 'btn theme-toggle' : 'icon-btn theme-toggle'} data-theme-now={theme} onClick={toggle} aria-label={`${ui(lang, 'theme')}: ${ui(lang, next)}`}>
       {theme === 'light' ? <IconMoon /> : <IconSun />}
       {withLabel && <span>{ui(lang, next)}</span>}
     </button>
@@ -46,6 +62,8 @@ export function TopBar() {
   const { pathname } = useLocation();
   const [menu, setMenu] = useState(false);
   const [settings, setSettings] = useState(false);
+  const completed = useStore((s) => s.completed);
+  const doneCount = lessons.filter((l) => completed.includes(l.meta.id)).length;
 
   useEffect(() => {
     setMenu(false);
@@ -75,6 +93,14 @@ export function TopBar() {
       <Link to={`/${lang}`} className="brand">
         <Logo />
         <span>{ui(lang, 'appName')}</span>
+      </Link>
+
+      <Link to={`/${lang}`} className="progress-ring" aria-label={`${doneCount} / ${lessons.length} ${ui(lang, 'lessonsDone')}`} title={`${doneCount} / ${lessons.length} ${ui(lang, 'lessonsDone')}`}>
+        <svg viewBox="0 0 36 36" aria-hidden="true">
+          <circle cx="18" cy="18" r="15" />
+          <circle cx="18" cy="18" r="15" pathLength="100" strokeDasharray={`${(doneCount / Math.max(lessons.length, 1)) * 100} 100`} />
+        </svg>
+        <span>{doneCount}</span>
       </Link>
 
       <div className="topbar-wide">

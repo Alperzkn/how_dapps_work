@@ -100,7 +100,7 @@ Mührü Alice'in [[public-key]]'iyle herkes kontrol edebilir. Ama [[private-key]
 - \`k\` gizli kalmalı ve asla tekrar etmemelidir. Aynı \`k\` ile atılmış iki imza \`d\`'yi açığa çıkarır. Bu yüzden \`k\` deterministik olarak türetilir (RFC 6979).
 - [[transaction]] içinde gönderen alanı yoktur. [[node]]'lar \`(h, r, s, yParity)\` değerlerinden \`Q\`'yu geri çıkarır, ondan da [[address]]'i türetir.
 - \`(r, n − s)\` de geçerli bir imzadır; bu yüzden Ethereum yalnızca \`s ≤ n/2\` olanı kabul eder (EIP-2). Aksi halde üçüncü bir kişi [[transaction]]'ın [[hash]]'ini değiştirebilirdi.
-- \`chainId\` özetin içindedir (EIP-155); dolayısıyla bir imza başka bir zincirde yeniden kullanılamaz.
+- \`chainId\` özetin içindedir (EIP-155 ile gelen tekrar koruması); dolayısıyla bir imza başka bir zincirde yeniden kullanılamaz.
 
 [[account-nonce]], [[transaction]] çalıştırıldığı anda gönderenin "state" içindeki "nonce" değerine eşit olmalıdır. Daha küçüğü reddedilir, daha büyüğü sırasını bekler.`,
       },
@@ -142,7 +142,7 @@ Her şey yolundaysa [[transaction]]'ı saklar ve "peer"'larına duyurur; onlar d
 [[ledger]] üzerinde henüz hiçbir şey değişmedi. Ağ bu [[transaction]]'ı biliyor ama o daha bir [[block]] içinde değil.`,
         expert: `[[wallet]], imzalı ham baytları [[json-rpc]] metodu \`eth_sendRawTransaction\` ile gönderir; dönen değer [[transaction]]'ın [[hash]]'idir, yani imzalı kodlamanın tamamının \`keccak256\` özeti. Bu [[hash]] daha [[block]]'a girmeden bilinir; "receipt" ise ancak girdikten sonra oluşur.
 
-Ethereum'un "execution layer" katmanında [[transaction]]'lar devp2p üzerinden yayılır (\`eth\` protokolü, sürüm 68). Bir [[node]], [[transaction]]'ın tamamını "peer"'larının küçük bir kısmına yollar; geri kalanına yalnızca \`NewPooledTransactionHashes\` ile [[hash]]'ini duyurur. Elinde olmayan "peer", \`GetPooledTransactions\` ile ister. Bitcoin aynı işi \`inv\`, \`getdata\` ve \`tx\` mesajlarıyla yapar.
+Ethereum'un "execution layer" katmanında [[transaction]]'lar devp2p üzerinden yayılır (\`eth\` protokolü). Bir [[node]], [[transaction]]'ın tamamını "peer"'larının küçük bir kısmına yollar; geri kalanına yalnızca \`NewPooledTransactionHashes\` ile [[hash]]'ini duyurur. Elinde olmayan "peer", \`GetPooledTransactions\` ile ister. Bitcoin her [[transaction]]'ı \`inv\` ile duyurur; elinde olmayan "peer" \`getdata\` ile yanıt verir ve \`tx\` mesajını alır.
 
 Bir [[node]]'un [[transaction]]'ı kabul edip iletmeden önce baktıkları: kodlama düzgün mü, imzadan gönderen çıkarılabiliyor mu, \`nonce ≥\` hesabın "nonce" değeri mi, \`balance ≥ gasLimit × maxFeePerGas + value\` mı, \`gasLimit ≥\` "intrinsic" [[gas]] mı (düz bir transfer için 21000) ve ücret o [[node]]'un kendi alt sınırını geçiyor mu.
 

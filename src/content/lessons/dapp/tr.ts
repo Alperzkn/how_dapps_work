@@ -173,7 +173,7 @@ Birbirinden çok farklı iki istek türü vardır:
 Yani tipik bir sayfa bakiyeleri ve fiyatları okuma çağrılarıyla sürekli okur; [[transaction]]'ı ise yalnızca sen bir düğmeye basıp [[wallet]]'ta onayladığında gönderir.`,
         expert: `Tel üzerindeki biçim [[json-rpc]] 2.0'dır: HTTPS ya da WebSocket üzerinden \`{ jsonrpc, id, method, params }\`. Bir [[dapp]]'in en çok kullandığı metotlar:
 
-- \`eth_call\`: bir mesaj çağrısını, [[transaction]] oluşturmadan, verilen bir [[block]]'un (varsayılan \`"latest"\`) durumu üzerinde çalıştırır. \`view\` fonksiyonları ve durum değiştiren fonksiyonların simülasyonu için kullanılır.
+- \`eth_call\`: bir mesaj çağrısını, [[transaction]] oluşturmadan, verilen bir [[block]]'un (çoğunlukla \`"latest"\`) durumu üzerinde çalıştırır. \`view\` fonksiyonları ve durum değiştiren fonksiyonların simülasyonu için kullanılır.
 - \`eth_estimateGas\`: çağrının başarıyla tamamlanmasına yeten bir [[gas]] limiti arar.
 - \`eth_sendRawTransaction\`: imzalı, serileştirilmiş işlemi gönderir; işlem bir [[block]]'a girmeden çok önce, hemen [[hash]] değerini döndürür.
 - \`eth_getTransactionReceipt\`: işlem bir [[block]]'a girene kadar \`null\`, sonra \`status\`, \`gasUsed\`, \`logs\`.
@@ -225,7 +225,7 @@ Bir [[dapp]] senin "token"'larını alması gerektiğinde ("swap", yatırma), da
 Bilinmesi gereken uç durumlar: bazı "token"'lar \`bool\` döndürmez ("safe transfer" sarmalayıcısı kullan), bazıları transferden ücret keser ve alınan miktar \`amount\`'tan düşük olur, sıfırdan farklı bir "allowance"'ı doğrudan değiştirmek ise "front-run" edilebilir. "Revert", başarısız çağrı çerçevesindeki durum değişikliklerini ve "log"'ları geri alır, ama gönderen harcanan [[gas]] için yine öder.`,
       },
       code: {
-        lang: 'Solidity',
+        lang: 'Solidity (sadeleştirilmiş ERC-20)',
         source: `// transfer(0x2222…2222, 10 * 10**18) için calldata:
 // 0xa9059cbb                                                        selector
 // 0000000000000000000000002222222222222222222222222222222222222222  to

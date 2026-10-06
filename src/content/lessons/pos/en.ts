@@ -46,7 +46,7 @@ Someone who has locked a deposit and runs the software is called a [[validator]]
 
 Validators take turns proposing blocks and vote on each other's blocks. Honest work earns rewards of a few percent per year; being offline costs small penalties; provable cheating triggers [[slashing]].
 
-There is no puzzle to solve, so an ordinary computer is enough. When Ethereum switched from mining to [[staking]] in September 2022 (the Merge), its electricity use fell by about 99.95%.`,
+There is no puzzle to solve, so an ordinary computer is enough. When Ethereum switched from mining to [[staking]] in September 2022 (the Merge), its electricity use fell by more than 99.9%.`,
         expert: `Ethereum's consensus protocol is **Gasper**: the [[lmd-ghost]] [[fork-choice]] rule, which picks the head block slot by slot, combined with [[casper-ffg]], a finality gadget that makes whole stretches of the chain irreversible.
 
 A [[validator]] is created by sending 32 ETH and a BLS12-381 public key to the deposit contract on the execution layer. After passing through an activation queue (a churn limit bounds how fast the set may change) it becomes active. Its voting weight is its \`effective_balance\`, which moves in 1 ETH steps with hysteresis. Since the Pectra upgrade (EIP-7251) one validator can hold an effective balance of up to 2,048 ETH; 32 ETH remains the minimum to activate.
@@ -93,7 +93,7 @@ When two blocks compete, nodes follow the branch with the most stake voting for 
 
 [[lmd-ghost]] (Latest Message Driven, Greedy Heaviest Observed SubTree) starts from the latest justified checkpoint and, at each [[fork]], descends into the child whose subtree holds the largest [[stake]], counting only each validator's most recent [[attestation]]. A block that arrives on time gets a temporary *proposer boost* worth 40% of one slot's committee weight, which blunts balancing and short-reorg attacks.
 
-Timing is part of the protocol: the block is due at the start of the [[slot]], attestations after 4 seconds, aggregates after 8. Rewards are split by flags for a correct and timely source, target and head, and a missed or wrong vote is penalised by about the amount it would have earned.`,
+Timing is part of the protocol: the block is due at the start of the [[slot]], attestations after 4 seconds, aggregates after 8. Rewards are split by flags for a correct and timely source, target and head, and a missed or wrong source or target vote is penalised by about the amount it would have earned, while a missed head vote simply earns nothing.`,
       },
       code: {
         lang: 'Python (consensus spec)',
@@ -128,7 +128,7 @@ With everything working this takes two epochs, about 13 minutes. A finalized blo
 
 Two properties follow. **Accountable safety**: two conflicting finalized checkpoints imply that validators with at least 1/3 of the [[stake]] signed a double vote or a surround vote, and can be slashed. **Plausible liveness**: as long as 2/3 follow the protocol, a new checkpoint can always be finalized.
 
-If more than 1/3 go offline, finalization stops, but [[lmd-ghost]] keeps producing blocks. After four epochs without [[finality]] the *inactivity leak* begins: non-participating validators lose balance at a rate that grows quadratically with time until the participating ones again hold 2/3. The chain prefers staying live and repairs finality later.`,
+If more than 1/3 go offline, finalization stops, but [[lmd-ghost]] keeps producing blocks. After four epochs without [[finality]] the *inactivity leak* begins: non-participating validators lose balance at a rate that keeps rising, so the total loss grows quadratically with time, until the participating ones again hold 2/3. The chain prefers staying live and repairs finality later.`,
       },
     },
     slashing: {

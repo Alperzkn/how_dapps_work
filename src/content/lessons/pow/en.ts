@@ -93,7 +93,7 @@ Use the slider and press **Mine**. Your device really performs this search. Each
 
 A hash function gives no hint about which input will work, so the only strategy is brute force: try nonce 0, 1, 2, … and hash each time. Finding a solution takes a huge number of tries on average. **Checking** one takes a single hash, so everybody can verify the work instantly.
 
-In the demo each hex zero multiplies the average number of tries by 16: 3 zeros need about 4,096, 5 zeros about a million. Bitcoin's real target currently requires around 19 to 20 leading hex zeros.`,
+In the demo each hex zero multiplies the average number of tries by 16: 3 zeros need about 4,096, 5 zeros about a million. Bitcoin's real target requires at least 19 leading hex zeros as of 2026.`,
         expert: `Bitcoin's validity condition is \`SHA256d(header) ≤ target\`, where \`SHA256d(x) = SHA-256(SHA-256(x))\` over the 80-byte [[block-header]] and the digest is read as a 256-bit little-endian integer.
 
 The [[target]] is stored in the header in compact form: \`nBits = 0xEEMMMMMM\` means \`target = mantissa × 256^(exponent − 3)\`. The largest allowed target is \`0x1d00ffff\`, and [[difficulty]] is defined as \`max_target / target\`. The expected work per block is about \`difficulty × 2^32\` hashes.
@@ -126,7 +126,7 @@ loop:
 A miner with more machines makes more guesses per second, so it wins more often. But it is still luck: a small miner can find the next block before a giant one.
 
 Press **Mine** to join the race with your own device.`,
-        intermediate: `The total guessing speed of all miners is the network's [[hashrate]]. Bitcoin's is measured in hundreds of exahashes per second; one exahash is 10^18 [[hash|hashes]].
+        intermediate: `The total guessing speed of all miners is the network's [[hashrate]]. Bitcoin's is around a thousand exahashes per second as of 2026; one exahash is 10^18 [[hash|hashes]].
 
 A [[miner]] with share *p* of the hashrate finds, on average, a fraction *p* of all blocks. Because a lone small miner might wait years for a win, most join **pools** that combine their work and split the rewards in proportion to it.
 
@@ -154,7 +154,7 @@ The [[block-reward]] has two parts: the **subsidy**, new coins created by the bl
 That schedule is why there will never be more than 21 million bitcoin. As the subsidy shrinks, fees have to carry more of the security budget.`,
         expert: `Propagation uses \`inv\`/\`headers\` announcements followed by block download; compact block relay (BIP 152) sends short transaction ids so peers rebuild the block from their own [[mempool]]. Fast propagation matters: every second of delay raises the stale rate and favours large, well-connected miners.
 
-Validation is asymmetric by design: one \`SHA256d\` checks the work, then full script and UTXO validation checks the contents. The header's [[timestamp]] must be greater than the median of the previous 11 blocks and no more than two hours ahead of network-adjusted time.
+Validation is asymmetric by design: one \`SHA256d\` checks the work, then full script and UTXO validation checks the contents. The header's [[timestamp]] must be greater than the median of the previous 11 blocks and no more than two hours ahead of the checking node's own clock.
 
 The coinbase output may claim at most \`subsidy + fees\`, where \`subsidy = 50 BTC >> (height / 210000)\`, computed in [[satoshi|satoshis]] with integer shifts. Total supply converges to just under 21 million BTC, and the subsidy reaches zero around the year 2140. Coinbase outputs cannot be spent for 100 blocks, so a [[reorg]] cannot leave descendants of an erased reward in circulation.`,
       },

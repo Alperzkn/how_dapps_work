@@ -154,7 +154,7 @@ Hesap kitap [[epoch]] sınırlarında yapılır: ödüller ve cezalar uygulanır
     lesson: 'pos',
     en: {
       short: 'A 12-second window on Ethereum in which one chosen validator may propose a block.',
-      long: `Ethereum's clock ticks in slots of exactly 12 seconds. Each slot has one [[proposer]], who may publish one [[block]], and one committee of validators who vote on what they see.
+      long: `Ethereum's clock ticks in slots of exactly 12 seconds. Each slot has one [[proposer]], who may publish one [[block]], and one group of validators who vote on what they see.
 
 A slot can stay empty if its proposer is offline; the chain simply continues with the next one. Thirty-two slots form an [[epoch]].`,
     },

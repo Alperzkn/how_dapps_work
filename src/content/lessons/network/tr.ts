@@ -59,7 +59,7 @@ Neyi tuttuklarına ve neyi doğruladıklarına göre [[node]] türleri:
 
 "Light client" güvenliği belirli bir noktada daha zayıftır: bir şeyin, çoğunluğun kurduğu bir [[block]]'ta *bulunduğunu* doğrulayabilir ama o [[block]]'un bütün kurallara uyduğunu doğrulayamaz. Bunu yalnızca tam doğrulama sağlar.
 
-"Peer"'lar bir rehber olmadan bulunur. Bitcoin [[node]]'ları DNS "seed"'leriyle başlar, sonra birbirlerine \`addr\` mesajları yollar; Ethereum, Kademlia benzeri bir DHT kullanır (discv4 ve discv5). Bitcoin Core varsayılan olarak 8 tam ve 2 yalnızca [[block]] ileten giden bağlantı açar; gelenlerle birlikte toplam 125 bağlantıya kadar kabul eder.`,
+"Peer"'lar bir rehber olmadan bulunur. Bitcoin [[node]]'ları DNS "seed"'leriyle başlar, sonra birbirlerine \`addr\` mesajları yollar; Ethereum, Kademlia benzeri bir DHT kullanır (discv4 ve discv5). Bitcoin Core varsayılan olarak 8 tam ve 2 yalnızca [[block]] ileten giden bağlantı açar; gelenlerle birlikte varsayılan olarak toplam 125 bağlantıya kadar kabul eder (32. sürümden itibaren 200).`,
       },
     },
     gossip: {
@@ -81,7 +81,7 @@ Hız önemlidir. Bir Bitcoin [[block]]'u birkaç saniye içinde ağın çoğuna 
         expert: `Her şeyi herkese göndermek bant genişliğini boşa harcardı; gerçek protokoller önce duyurur, isteyene gönderir.
 
 - **Bitcoin**: bir [[node]] yeni [[transaction]]'ları \`inv\` ile duyurur; elinde olmayan "peer" \`getdata\` ile ister ve \`tx\` mesajını alır. [[block]]'lar için "compact block relay" kullanılır (BIP 152): \`cmpctblock\` mesajı [[block-header]]'ı ve kısa [[transaction]] kimliklerini taşır; alıcı [[block]]'u kendi [[mempool]]'undan yeniden kurar, yalnızca eksik olanları ister.
-- **Ethereum, "execution layer"**: [[transaction]]'lar devp2p üzerinden yayılır (\`eth/68\`); birkaç "peer"'a tam olarak, geri kalanına [[hash]] duyurusu olarak gider.
+- **Ethereum, "execution layer"**: [[transaction]]'lar devp2p üzerinden yayılır (\`eth\` protokolü); birkaç "peer"'a tam olarak, geri kalanına [[hash]] duyurusu olarak gider.
 - **Ethereum, "consensus layer"**: [[block]]'lar ve [[attestation]]'lar libp2p gossipsub üzerinden yayılır. Her "topic" tam mesajlar için yaklaşık 8 "peer"'lık bir "mesh" tutar (\`D = 8\`); diğerlerine yalnızca mesaj kimliklerini duyurur, onlar da kaçırdıklarını ister.
 
 Mesajlar iletilmeden önce kontrol edilir. Kontrolden geçemeyen mesaj atılır ve onu gönderen "peer"'ın hanesine eksi yazılır; böylece çöp veri uzağa gidemez.

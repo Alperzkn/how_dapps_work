@@ -50,7 +50,7 @@ Teminat kilitleyip yazılımı çalıştıran kişiye [[validator]] denir. Yarı
 
 [[validator]]'lar sırayla [[block]] önerir ve birbirlerinin [[block]]'larını oylar. Dürüst çalışmak yılda yüzde birkaç oranında ödül kazandırır; çevrimdışı kalmak küçük cezalara yol açar; kanıtlanabilen hile ise [[slashing]] ile sonuçlanır.
 
-Çözülecek bir bulmaca olmadığından sıradan bir bilgisayar yeter. Ethereum Eylül 2022'de [[mining]]'den [[staking]]'e geçtiğinde ("the Merge") elektrik tüketimi yaklaşık %99,95 düştü.`,
+Çözülecek bir bulmaca olmadığından sıradan bir bilgisayar yeter. Ethereum Eylül 2022'de [[mining]]'den [[staking]]'e geçtiğinde ("the Merge") elektrik tüketimi %99,9'dan fazla düştü.`,
         expert: `Ethereum'un [[consensus]] protokolünün adı **Gasper**'dır: zincirin ucundaki [[block]]'u [[slot]] [[slot]] seçen [[lmd-ghost]] [[fork-choice]] kuralı ile zincirin uzun parçalarını geri alınamaz kılan [[casper-ffg]] kesinlik mekanizmasının birleşimi.
 
 Bir [[validator]], "execution layer" üzerindeki "deposit contract"a 32 ETH ve bir BLS12-381 açık anahtarı gönderilerek oluşturulur. Aktivasyon kuyruğundan geçtikten sonra aktif olur ("churn limit", kümenin ne hızla değişebileceğini sınırlar). Oy ağırlığı \`effective_balance\` değeridir; bu değer 1 ETH'lik adımlarla ve histerezisle değişir. Pectra yükseltmesinden (EIP-7251) beri tek bir [[validator]] 2.048 ETH'ye kadar \`effective_balance\` taşıyabilir; aktivasyon için alt sınır yine 32 ETH'dir.
@@ -97,7 +97,7 @@ Bir [[attestation]] aynı anda iki şey söyler: [[validator]]'ın doğru saydı
 
 [[lmd-ghost]] ("Latest Message Driven, Greedy Heaviest Observed SubTree") en son "justified" olan "checkpoint"ten başlar ve her [[fork]]'ta, alt ağacında en çok [[stake]] bulunan çocuğa iner. Hesaba her [[validator]]'ın yalnızca en son [[attestation]]'ı katılır. Zamanında gelen bir [[block]], bir [[slot]]'luk "committee" ağırlığının %40'ı kadar geçici bir "proposer boost" alır; bu, dengeleme ve kısa [[reorg]] saldırılarını köreltir.
 
-Zamanlama protokolün parçasıdır: [[block]]'un [[slot]] başında, [[attestation]]'ların 4. saniyede, birleştirilmiş oyların 8. saniyede gelmesi beklenir. Ödül; doğru ve zamanında verilmiş "source", "target" ve "head" oyları için ayrı ayrı paylaştırılır. Kaçırılan ya da yanlış verilen oy, kazandıracağı tutar kadar cezalandırılır.`,
+Zamanlama protokolün parçasıdır: [[block]]'un [[slot]] başında, [[attestation]]'ların 4. saniyede, birleştirilmiş oyların 8. saniyede gelmesi beklenir. Ödül; doğru ve zamanında verilmiş "source", "target" ve "head" oyları için ayrı ayrı paylaştırılır. Kaçırılan ya da yanlış verilen "source" ya da "target" oyu, kazandıracağı tutar kadar cezalandırılır; kaçırılan "head" oyu ise yalnızca ödül kazandırmaz.`,
       },
       code: {
         lang: 'Python (consensus spec)',
@@ -132,7 +132,7 @@ Her şey yolundayken bu iki [[epoch]], yani yaklaşık 13 dakika sürer. "Finali
 
 Buradan iki özellik çıkar. **"Accountable safety"**: birbiriyle çelişen iki "finalized" "checkpoint" varsa [[stake]]'in en az 1/3'üne sahip [[validator]]'lar "double vote" ya da "surround vote" imzalamış demektir ve [[slashing]] cezası alabilirler. **"Plausible liveness"**: 2/3 protokole uyduğu sürece yeni bir "checkpoint" her zaman kesinleştirilebilir.
 
-1/3'ten fazlası çevrimdışı kalırsa kesinleşme durur, ama [[lmd-ghost]] [[block]] üretmeyi sürdürür. [[finality]] olmadan dört [[epoch]] geçince "inactivity leak" başlar: oy vermeyen [[validator]]'ların bakiyesi, zamanla karesel hızlanan bir oranda erir; ta ki oy verenler yeniden 2/3'e ulaşana kadar. Zincir çalışır kalmayı seçer, kesinliği sonradan onarır.`,
+1/3'ten fazlası çevrimdışı kalırsa kesinleşme durur, ama [[lmd-ghost]] [[block]] üretmeyi sürdürür. [[finality]] olmadan dört [[epoch]] geçince "inactivity leak" başlar: oy vermeyen [[validator]]'ların bakiyesi giderek artan bir hızla erir, yani toplam kayıp zamanın karesiyle büyür; ta ki oy verenler yeniden 2/3'e ulaşana kadar. Zincir çalışır kalmayı seçer, kesinliği sonradan onarır.`,
       },
     },
     slashing: {

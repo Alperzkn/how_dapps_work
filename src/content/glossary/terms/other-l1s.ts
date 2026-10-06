@@ -69,7 +69,7 @@ Kanıtlanmış bir yasa değil, pratik bir kuraldır. "Rollup"'lar, "sharding" v
       short: 'Transactions per second: how many transactions a chain processes each second.',
       long: `TPS is the most quoted measure of a chain's capacity. It follows from how much fits in a [[block]] and how often blocks are produced.
 
-Rough orders of magnitude (as of 2026): [[bitcoin]] around 7, [[ethereum]]'s base chain a few tens, and high-throughput chains such as [[solana]] on the order of a thousand user transactions per second in practice.
+Rough orders of magnitude (as of 2026): [[bitcoin]] around 7, [[ethereum]]'s base chain a few tens, and high-throughput chains such as [[solana]] roughly one to a few thousand user transactions per second in practice.
 
 Treat headline TPS numbers with care. They depend on what is counted as a transaction (a simple transfer is far cheaper than a complex contract call), on whether the figure is a lab benchmark or real usage, and they say nothing about how long a transaction takes to become final or how hard the chain is to attack.`,
     },
@@ -77,7 +77,7 @@ Treat headline TPS numbers with care. They depend on what is counted as a transa
       short: '"Transactions per second": bir zincirin saniyede işlediği [[transaction]] sayısı.',
       long: `[[tps]], bir zincirin kapasitesi için en sık anılan ölçüdür. Bir [[block]]'a ne kadar sığdığından ve [[block]]'ların ne sıklıkla üretildiğinden çıkar.
 
-Kabaca büyüklükler (2026 itibarıyla): Bitcoin 7 civarı, Ethereum'un taban zinciri birkaç on, Solana gibi yüksek iş hacimli zincirler ise pratikte saniyede bin mertebesinde kullanıcı [[transaction]]'ı.
+Kabaca büyüklükler (2026 itibarıyla): Bitcoin 7 civarı, Ethereum'un taban zinciri birkaç on, Solana gibi yüksek iş hacimli zincirler ise pratikte saniyede kabaca bin ile birkaç bin arası kullanıcı [[transaction]]'ı.
 
 Manşetlerdeki [[tps]] rakamlarına dikkatle yaklaş. Neyin [[transaction]] sayıldığına (basit bir transfer, karmaşık bir "contract" çağrısından çok daha ucuzdur) ve rakamın laboratuvar ölçümü mü gerçek kullanım mı olduğuna bağlıdır; ayrıca bir [[transaction]]'ın ne kadar sürede kesinleştiği ya da zincire saldırmanın ne kadar zor olduğu hakkında hiçbir şey söylemez.`,
     },
@@ -95,7 +95,7 @@ Manşetlerdeki [[tps]] rakamlarına dikkatle yaklaş. Neyin [[transaction]] say�
 
 Two ideas stand out. [[proof-of-history]] gives the network a shared, verifiable clock, so validators spend less time agreeing on the order of events. [[parallel-execution]] lets transactions that touch different accounts run at the same time on different CPU cores. Security comes from [[proof-of-stake]].
 
-Blocks arrive roughly every 400 milliseconds (as of 2026) and fees are usually very low. The cost is demanding hardware and bandwidth for validators, which limits who can run one.`,
+Blocks arrive roughly every 250 milliseconds (as of October 2026, down from 400) and fees are usually very low. The cost is demanding hardware and bandwidth for validators, which limits who can run one.`,
     },
     tr: {
       short: 'İçindeki saat ve [[parallel-execution]] sayesinde tek zincirde yüksek iş hacmi için kurulmuş bir [[layer-1]] (2020).',
@@ -103,7 +103,7 @@ Blocks arrive roughly every 400 milliseconds (as of 2026) and fees are usually v
 
 İki fikir öne çıkar. [[proof-of-history]] ağa ortak, doğrulanabilir bir saat verir; böylece [[validator]]'lar olayların sırası üzerinde anlaşmaya daha az zaman harcar. [[parallel-execution]] ise farklı hesaplara dokunan [[transaction]]'ların farklı işlemci çekirdeklerinde aynı anda çalışmasını sağlar. Güvenlik [[proof-of-stake]] ile sağlanır.
 
-[[block]]'lar kabaca 400 milisaniyede bir gelir (2026 itibarıyla) ve ücretler genellikle çok düşüktür. Bedeli, [[validator]]'lar için yüksek donanım ve bant genişliği gereksinimidir; bu da kimlerin [[validator]] çalıştırabileceğini sınırlar.`,
+[[block]]'lar kabaca 250 milisaniyede bir gelir (Ekim 2026 itibarıyla; önceden 400'dü) ve ücretler genellikle çok düşüktür. Bedeli, [[validator]]'lar için yüksek donanım ve bant genişliği gereksinimidir; bu da kimlerin [[validator]] çalıştırabileceğini sınırlar.`,
     },
   },
   {

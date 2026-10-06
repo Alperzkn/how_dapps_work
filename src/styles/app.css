@@ -1,8 +1,8 @@
 /* Colors are CSS variables written by src/theme/applyTheme.ts from src/theme/tokens.ts. */
 :root {
-  --font: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-display: ui-rounded, 'SF Pro Rounded', 'Nunito', 'Segoe UI', system-ui, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  --font: 'Instrument Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Bricolage Grotesque Variable', 'Instrument Sans Variable', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   --radius: 14px;
   --radius-sm: 9px;
   --topbar: 56px;
@@ -1255,4 +1255,692 @@ html[data-present] .topbar {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+
+/* =====================================================================
+   Polish layer: type, motion and the richer home and lesson layouts.
+   ===================================================================== */
+
+h1,
+h2,
+h3 {
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+kbd {
+  display: none;
+  min-width: 22px;
+  padding: 1px 5px;
+  border-radius: 5px;
+  border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+  font: 600 0.72rem var(--font-mono);
+  opacity: 0.75;
+}
+
+@media (min-width: 1024px) and (hover: hover) {
+  kbd {
+    display: inline-block;
+  }
+}
+
+.btn-big {
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: 14px;
+  font-size: 1.02rem;
+}
+
+.btn-primary {
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+/* ---------- Top bar ---------- */
+
+.topbar {
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+}
+
+.brand {
+  margin-right: 0;
+  font-size: 1.1rem;
+}
+
+.progress-ring {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  margin-right: auto;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+  text-decoration: none;
+  font: 700 0.72rem var(--font-mono);
+}
+
+.progress-ring svg {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+
+.progress-ring circle {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 3.5;
+}
+
+.progress-ring circle + circle {
+  stroke: var(--c-valid);
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.6s ease;
+}
+
+.theme-toggle svg {
+  transition: transform 0.5s cubic-bezier(0.3, 1.5, 0.5, 1);
+}
+
+.theme-toggle[data-theme-now='dark'] svg {
+  transform: rotate(180deg);
+}
+
+/* The new theme spreads from the toggle (see ThemeToggle). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+  animation: theme-reveal 0.55s ease-out;
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0 at var(--vt-x, 100%) var(--vt-y, 0));
+  }
+  to {
+    clip-path: circle(150vmax at var(--vt-x, 100%) var(--vt-y, 0));
+  }
+}
+
+/* ---------- Home ---------- */
+
+.home {
+  width: min(1180px, 100%);
+}
+
+.hero {
+  position: relative;
+  gap: 8px 40px;
+  margin-bottom: 44px;
+}
+
+.hero h1 {
+  font-size: clamp(2.3rem, 6.4vw, 4.1rem);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  max-width: 13ch;
+}
+
+.hero p {
+  font-size: 1.12rem;
+  max-width: 48ch;
+}
+
+.level-cards {
+  gap: 10px;
+}
+
+.level-card {
+  position: relative;
+  isolation: isolate;
+  min-height: 0;
+  padding: 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  transition: border-color 0.2s;
+}
+
+.level-card[aria-pressed='true'] {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.level-card-pick {
+  position: absolute;
+  inset: -1.5px;
+  z-index: -1;
+  border-radius: 14px;
+  border: 2px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface));
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.depth-glyph {
+  width: 34px;
+  margin-bottom: 4px;
+}
+
+.depth-glyph path {
+  fill: var(--surface2);
+  stroke: var(--line);
+  stroke-width: 1;
+  transition: fill 0.25s;
+}
+
+.depth-glyph path[data-on] {
+  fill: var(--accent);
+  stroke: color-mix(in srgb, var(--accent) 60%, #000);
+}
+
+.hero-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.hero-progress-bar {
+  flex: 0 1 180px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surface2);
+  overflow: hidden;
+}
+
+.hero-progress-bar span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--c-valid);
+  transition: width 0.6s ease;
+}
+
+.course-map {
+  position: relative;
+  justify-self: center;
+  width: min(520px, 100%);
+}
+
+.course-map svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+.map-track {
+  fill: none;
+  stroke: var(--c-chain);
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.45;
+}
+
+.map-track.done {
+  stroke: var(--c-valid);
+  opacity: 1;
+}
+
+.map-block {
+  cursor: pointer;
+  outline: none;
+  animation: block-drop 0.55s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+}
+
+@keyframes block-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-46px);
+  }
+}
+
+.map-lift {
+  transition: transform 0.22s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.map-block:hover .map-lift,
+.map-block[data-focus] .map-lift {
+  transform: translateY(-9px);
+}
+
+.map-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  opacity: 0;
+}
+
+.map-block:focus-visible .map-ring {
+  opacity: 1;
+}
+
+.map-block[data-next] .map-ring {
+  opacity: 1;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ring-pulse 1.8s ease-out infinite;
+}
+
+@keyframes ring-pulse {
+  from {
+    opacity: 0.9;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+.map-num {
+  font: 800 13px var(--font-display);
+  fill: var(--ink);
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.map-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-top: 4px;
+  padding: 12px 14px;
+  min-height: 92px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: 0 10px 30px var(--shadow);
+}
+
+.map-card-num {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #fff;
+  font: 800 1rem var(--font-display);
+}
+
+.map-card-text {
+  display: grid;
+  gap: 1px;
+}
+
+.map-card-text small {
+  font-weight: 600;
+  color: var(--ink-soft);
+}
+
+.map-card-text strong {
+  font: 700 1.05rem var(--font-display);
+}
+
+.map-card-text span {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+@media (min-width: 900px) {
+  .hero {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    margin: 28px 0 64px;
+  }
+  .course-map {
+    order: 0;
+    width: 100%;
+  }
+}
+
+.lesson-list h2 {
+  text-transform: none;
+  letter-spacing: -0.01em;
+  font-size: 1.25rem;
+  color: var(--ink);
+}
+
+.lesson-card {
+  border-radius: 16px;
+}
+
+.lesson-num {
+  transition: background 0.2s, color 0.2s;
+}
+
+.lesson-card:hover .lesson-num:not([data-done]) {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* ---------- Lesson page ---------- */
+
+.lesson-scene {
+  background:
+    radial-gradient(60% 55% at 50% 52%, color-mix(in srgb, var(--accent) 13%, transparent), transparent 70%),
+    radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 1.5px) 0 0 / 22px 22px,
+    var(--bg);
+}
+
+.lesson-progress {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: 9;
+  height: 3px;
+  background: color-mix(in srgb, var(--line) 60%, transparent);
+}
+
+.lesson-progress span {
+  display: block;
+  height: 100%;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(90deg, var(--c-block), var(--c-actor), var(--c-token-a));
+  background-size: 100vw 100%;
+  transition: width 0.45s cubic-bezier(0.3, 0.9, 0.3, 1);
+}
+
+.scene-tools .icon-btn {
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+}
+
+.scene-hint {
+  top: 12px;
+  left: 12px;
+  right: auto;
+  max-width: calc(100% - 140px);
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition: opacity 0.5s, transform 0.5s;
+}
+
+.scene-hint[data-hidden] {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.crumbs {
+  display: grid;
+  gap: 2px;
+}
+
+.crumbs span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.crumbs span::before {
+  content: '';
+  width: 9px;
+  height: 9px;
+  border-radius: 3px;
+  background: var(--c-block);
+}
+
+.crumbs span[data-chapter='consensus']::before { background: var(--c-actor); }
+.crumbs span[data-chapter='l1']::before { background: var(--c-token-b); }
+.crumbs span[data-chapter='dapps']::before { background: var(--c-token-a); }
+
+.crumbs strong {
+  font: 700 1rem var(--font-display);
+  color: var(--ink);
+}
+
+/* Level switch: the highlight is a separate element that slides. */
+.level-switch button {
+  position: relative;
+  isolation: isolate;
+}
+
+.level-switch button[aria-pressed='true'] {
+  background: transparent;
+  box-shadow: none !important;
+}
+
+.seg-thumb {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: inset 0 -3px 0 var(--c-valid), 0 1px 3px var(--shadow);
+}
+
+.seg-thumb[data-tone='intermediate'] { box-shadow: inset 0 -3px 0 var(--c-tx), 0 1px 3px var(--shadow); }
+.seg-thumb[data-tone='expert'] { box-shadow: inset 0 -3px 0 var(--c-invalid), 0 1px 3px var(--shadow); }
+
+.prose h1 {
+  font-size: 1.6rem;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+}
+
+/* Step text arrives from the side you are heading to; a level change just fades. */
+.prose[data-dir] > * {
+  animation: prose-in 0.38s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+.prose[data-dir='fwd'] > * { --from: 22px; }
+.prose[data-dir='back'] > * { --from: -22px; }
+.prose > :nth-child(2) { animation-delay: 40ms; }
+.prose > :nth-child(3) { animation-delay: 80ms; }
+.prose > :nth-child(n + 4) { animation-delay: 120ms; }
+
+@keyframes prose-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--from, 0));
+  }
+}
+
+.code-panel {
+  border-radius: 12px;
+}
+
+.code-panel pre {
+  font-size: 0.78rem;
+}
+
+/* Step rail: numbered blocks joined by links, like the chain itself. */
+.step-dots {
+  gap: 0;
+  align-items: center;
+}
+
+.step-dots li {
+  display: flex;
+  align-items: center;
+}
+
+.step-dots li + li::before {
+  content: '';
+  width: clamp(8px, 2.2vw, 26px);
+  height: 3px;
+  background: var(--line);
+  transition: background 0.3s;
+}
+
+.step-dots li[data-past] + li::before {
+  background: var(--c-valid);
+}
+
+.step-dots button {
+  width: 30px;
+  height: var(--tap);
+  display: grid;
+  place-items: center;
+}
+
+.step-dots button::after {
+  content: none;
+}
+
+.step-dots button span {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 7px;
+  background: var(--surface2);
+  border: 1.5px solid var(--line);
+  color: var(--ink-soft);
+  font: 700 0.72rem var(--font-mono);
+  transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1), background 0.25s, color 0.25s, border-color 0.25s;
+}
+
+.step-dots button:hover span {
+  transform: translateY(-2px);
+}
+
+.step-dots button[data-past] span {
+  background: color-mix(in srgb, var(--c-valid) 22%, var(--surface));
+  border-color: var(--c-valid);
+  color: var(--ink);
+}
+
+.step-dots button[aria-current] span {
+  transform: scale(1.22);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+/* Lesson finished: a block drops in and joins the chain. */
+.celebrate {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 6px;
+  pointer-events: none;
+  animation: celebrate-out 0.5s ease-in 2.7s both;
+}
+
+.celebrate-block {
+  width: 120px;
+  filter: drop-shadow(0 14px 18px var(--shadow));
+  animation: celebrate-drop 0.6s cubic-bezier(0.25, 1.5, 0.45, 1) both;
+}
+
+.celebrate p {
+  display: grid;
+  justify-items: center;
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  box-shadow: 0 10px 30px var(--shadow);
+  animation: prose-in 0.4s ease-out 0.35s both;
+}
+
+.celebrate strong {
+  font: 750 1.2rem var(--font-display);
+}
+
+.celebrate span {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.celebrate-burst {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+}
+
+.celebrate-burst i {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  opacity: 0;
+  animation: burst 0.9s cubic-bezier(0.1, 0.8, 0.3, 1) both;
+}
+
+@keyframes celebrate-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-140px) scale(0.8);
+  }
+}
+
+@keyframes celebrate-out {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes burst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0) scale(0.4);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--x), var(--y)) rotate(200deg) scale(1);
+  }
+}
+
+/* ---------- Glossary ---------- */
+
+.glossary h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.term-card {
+  border-radius: 14px;
+  transition: transform 0.15s, border-color 0.15s, background 0.15s;
+  animation: prose-in 0.3s ease-out both;
+}
+
+.term-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.term-card strong {
+  font: 700 1.02rem var(--font-display);
+}
+
+.term-long h3 {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.95rem;
+}
+
+.term-dialog {
+  border: 1px solid var(--line);
+}
+
+.term-title h2 {
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
 }

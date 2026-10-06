@@ -97,7 +97,7 @@ Kaydırıcıyı ayarla ve **Mine** düğmesine bas. Bu aramayı cihazın gerçek
 
 Bir [[hash]] fonksiyonu hangi girdinin işe yarayacağına dair hiçbir ipucu vermez; geriye tek strateji kalır: kaba kuvvet. [[nonce]] olarak 0, 1, 2, … dene ve her seferinde [[hash]] al. Çözümü bulmak ortalamada devasa sayıda deneme ister. Çözümü **kontrol etmek** ise tek bir [[hash]] hesabıdır; yapılan işi herkes anında doğrulayabilir.
 
-Aşağıdaki denemede her onaltılık sıfır, ortalama deneme sayısını 16'ya katlar: 3 sıfır için yaklaşık 4.096, 5 sıfır için yaklaşık bir milyon deneme gerekir. Bitcoin'in bugünkü [[target]] değeri baştan 19-20 kadar onaltılık sıfır ister.`,
+Aşağıdaki denemede her onaltılık sıfır, ortalama deneme sayısını 16'ya katlar: 3 sıfır için yaklaşık 4.096, 5 sıfır için yaklaşık bir milyon deneme gerekir. Bitcoin'in gerçek [[target]] değeri 2026 itibarıyla baştan en az 19 onaltılık sıfır ister.`,
         expert: `Bitcoin'de geçerlilik koşulu \`SHA256d(header) ≤ target\` biçimindedir. Burada \`SHA256d(x) = SHA-256(SHA-256(x))\`, 80 baytlık [[block-header]] üzerinde hesaplanır ve çıkan özet 256 bitlik "little-endian" bir tam sayı olarak okunur.
 
 [[target]], [[block-header]] içinde sıkıştırılmış biçimde durur: \`nBits = 0xEEMMMMMM\` ise \`target = mantissa × 256^(exponent − 3)\`. İzin verilen en büyük [[target]] \`0x1d00ffff\` değeridir ve [[difficulty]], \`max_target / target\` olarak tanımlanır. Bir [[block]] için beklenen iş yaklaşık \`difficulty × 2^32\` [[hash]] hesabıdır.
@@ -130,7 +130,7 @@ loop:
 Daha çok makinesi olan saniyede daha çok tahmin yapar ve daha sık kazanır. Ama iş yine de şansa kalır: küçük bir [[miner]], sıradaki [[block]]'u bir devden önce bulabilir.
 
 **Mine** düğmesine basarak kendi cihazınla yarışa katıl.`,
-        intermediate: `Bütün [[miner]]'ların toplam tahmin hızına ağın [[hashrate]] değeri denir. Bitcoin'de bu değer saniyede yüzlerce "exahash" ile ölçülür; bir "exahash" 10^18 [[hash]] demektir.
+        intermediate: `Bütün [[miner]]'ların toplam tahmin hızına ağın [[hashrate]] değeri denir. Bitcoin'de bu değer 2026 itibarıyla saniyede bin "exahash" dolayındadır; bir "exahash" 10^18 [[hash]] demektir.
 
 [[hashrate]]'in *p* kadarına sahip bir [[miner]], ortalamada bütün [[block]]'ların *p* kadarını bulur. Tek başına çalışan küçük bir [[miner]] bir kez kazanmak için yıllarca bekleyebileceğinden çoğu, işini birleştirip ödülü emeğe göre paylaştıran "pool"lara katılır.
 
@@ -158,7 +158,7 @@ Kazanan [[block-reward]] alır: yepyeni coin'ler ve içerideki işlemlerin öded
 Hiçbir zaman 21 milyondan fazla bitcoin olmayacak olmasının nedeni bu takvimdir. "Subsidy" küçüldükçe güvenlik bütçesinin daha büyük kısmını ücretlerin karşılaması gerekir.`,
         expert: `Yayılım \`inv\`/\`headers\` duyuruları ve ardından [[block]] indirme ile yapılır; "compact block relay" (BIP 152) yalnızca kısa [[transaction]] kimliklerini gönderir ve karşı taraf [[block]]'u kendi [[mempool]]'undan yeniden kurar. Hızlı yayılım önemlidir: gecikmenin her saniyesi "stale" oranını yükseltir ve büyük, iyi bağlantılı [[miner]]'ların lehine çalışır.
 
-Doğrulama bilerek asimetrik tasarlanmıştır: tek bir \`SHA256d\` yapılan işi kontrol eder, ardından tam "script" ve UTXO doğrulaması içeriği kontrol eder. [[block-header]]'daki [[timestamp]], önceki 11 [[block]]'un medyanından büyük olmalı ve ağa göre ayarlanmış saatin en fazla iki saat ilerisinde olabilir.
+Doğrulama bilerek asimetrik tasarlanmıştır: tek bir \`SHA256d\` yapılan işi kontrol eder, ardından tam "script" ve UTXO doğrulaması içeriği kontrol eder. [[block-header]]'daki [[timestamp]], önceki 11 [[block]]'un medyanından büyük olmalı ve kontrolü yapan [[node]]'un kendi saatinin en fazla iki saat ilerisinde olabilir.
 
 "Coinbase" çıktısı en fazla \`subsidy + fees\` kadar talep edebilir; burada \`subsidy = 50 BTC >> (height / 210000)\` olup [[satoshi]] cinsinden tam sayı kaydırmasıyla hesaplanır. Toplam arz 21 milyon BTC'nin hemen altına yakınsar ve "subsidy" 2140 yılı civarında sıfıra iner. "Coinbase" çıktıları 100 [[block]] boyunca harcanamaz; böylece bir [[reorg]], silinmiş bir ödülden türeyen coin'leri dolaşımda bırakamaz.`,
       },

@@ -55,7 +55,7 @@ Node types, by what they keep and check:
 
 A light client's security is weaker in one specific way: it can verify that something *is* in a block the majority built, but not that the block obeys every rule. Only full validation gives that.
 
-Peers are found without a directory. Bitcoin nodes bootstrap from DNS seeds and then exchange \`addr\` messages; Ethereum uses a Kademlia-style DHT (discv4 and discv5). Bitcoin Core opens 8 full-relay and 2 block-only outbound connections by default and accepts inbound ones up to a total of 125.`,
+Peers are found without a directory. Bitcoin nodes bootstrap from DNS seeds and then exchange \`addr\` messages; Ethereum uses a Kademlia-style DHT (discv4 and discv5). Bitcoin Core opens 8 full-relay and 2 block-only outbound connections by default and accepts inbound ones up to a default total of 125 (200 from version 32).`,
       },
     },
     gossip: {
@@ -77,7 +77,7 @@ Speed matters. A Bitcoin block reaches most of the network within a few seconds.
         expert: `Sending everything to everyone would waste bandwidth, so real protocols announce first and send on request.
 
 - **Bitcoin**: a node announces new transactions with \`inv\`; a peer that lacks one answers \`getdata\` and receives the \`tx\`. Blocks use compact block relay (BIP 152): a \`cmpctblock\` message carries the header and short transaction ids, and the receiver rebuilds the block from its own [[mempool]], fetching only what is missing.
-- **Ethereum, execution layer**: transactions travel over devp2p (\`eth/68\`), in full to a few peers and as hash announcements to the rest.
+- **Ethereum, execution layer**: transactions travel over devp2p (the \`eth\` protocol), in full to a few peers and as hash announcements to the rest.
 - **Ethereum, consensus layer**: blocks and [[attestation|attestations]] travel over libp2p gossipsub. Each topic keeps a mesh of about 8 peers (\`D = 8\`) for full messages and gossips message ids to others, which can pull what they missed.
 
 Messages are checked before they are forwarded. One that fails is dropped and counts against the peer that sent it, so garbage does not travel far.

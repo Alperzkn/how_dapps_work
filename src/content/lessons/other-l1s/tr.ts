@@ -22,7 +22,7 @@ const content: LessonContent = {
     weakSca: 'yavaşlar',
     design: 'bir tasarım',
     poh: 'PoH saati',
-    slot: 'slot ≈ 400 ms',
+    slot: 'slot ≈ 250 ms',
     leader: 'leader',
     parallel: 'farklı hesaplar:\naynı anda',
     parallelE: 'ayrık write set\n→ paralel',
@@ -45,7 +45,7 @@ const content: LessonContent = {
     lightClient: 'A’nın light client’ı',
     relayer: 'relayer',
     solB: 'çok hızlı tek zincir\ngüçlü makine ister',
-    solI: 'block ≈ 0,4 sn\nkesinlik ≈ 13 sn',
+    solI: 'block ≈ 0,25 sn\nkesinlik ≈ 8 sn',
     solE: 'PoH + Tower BFT\nSealevel: paralel',
     avaB: 'hızlı yoklamayla anlaşma\nçok sayıda özel zincir',
     avaI: 'block ≈ 1–2 sn\nkesinlik ≈ 1–2 sn',
@@ -101,16 +101,16 @@ Bunun için alışılmadık iki şey yapar. Birincisi, içinde bir **saat** vard
 İkincisi, birçok işi **aynı anda** yapar. Bir ödeme Ayşe ile Ben arasında, bir diğeri Cem ile Deniz arasındaysa birbirleriyle ilgileri yoktur ve ayrı şeritlerdeki arabalar gibi yan yana ilerleyebilirler. Aynı hesaba dokunan iki ödeme ise yine birbirini beklemek zorundadır.
 
 Bu hızın bedeli, Solana'yı çalıştıran bilgisayarların güçlü ve iyi bağlantılı olması gerekmesidir; evdeki bir dizüstünden çok daha fazlası.`,
-        intermediate: `Solana kabaca 400 milisaniyede bir [[block]] üretir. Zaman [[slot]]'lara bölünür ve önceden yayınlanan bir takvim, her [[slot]]'ta hangi [[validator]]'ın "leader" olacağını söyler.
+        intermediate: `Solana kabaca 250 milisaniyede bir [[block]] üretir (Ekim 2026 itibarıyla; Ağustos 2026'ya kadar 400 milisaniyeydi ve aşamalı olarak 200'e indiriliyor). Zaman [[slot]]'lara bölünür ve önceden yayınlanan bir takvim, her [[slot]]'ta hangi [[validator]]'ın "leader" olacağını söyler.
 
 **Saat.** [[proof-of-history]], "leader"'ın saatidir. Bir [[hash]] fonksiyonunu tekrar tekrar çalıştırır; her çıktı bir sonrakinin girdisi olur ve gelen [[transaction]]'lar bu diziye karıştırılır. Bu [[hash]] zinciri ancak adım adım üretilebildiği için zamanın geçtiğini kanıtlar ve [[transaction]]'ların [[block]] içindeki sırasını sabitler.
 
 **Şeritler.** [[parallel-execution]] şöyle işler: her Solana [[transaction]]'ı hangi hesapları okuyacağını ve hangilerine yazacağını baştan bildirir. Çalışma ortamı bu listeyi kullanarak aynı hesaplara dokunmayan [[transaction]]'ları farklı işlemci çekirdeklerinde çalıştırır.
 
-Kabaca değerler, 2026 itibarıyla: pratikte saniyede bin mertebesinde kullanıcı [[transaction]]'ı (teorik tavan çok daha yüksek); bin mertebesinde [[validator]]; ücretler genellikle bir sentin küçük bir kesri. [[validator]]'lar sunucu sınıfı donanıma ihtiyaç duyar: çok çekirdekli işlemci, yüzlerce gigabayt RAM ve çok hızlı bir bağlantı. Ağ ayrıca geçmişinde birkaç kez tamamen durdu (en son Şubat 2024'te) ve [[validator]]'ları tarafından yeniden başlatıldı.`,
+Kabaca değerler, 2026 itibarıyla: pratikte saniyede kabaca bin ile birkaç bin arası kullanıcı [[transaction]]'ı (teorik tavan çok daha yüksek); birkaç yüz [[validator]]; ücretler genellikle bir sentin küçük bir kesri. [[validator]]'lar sunucu sınıfı donanıma ihtiyaç duyar: çok çekirdekli işlemci, yüzlerce gigabayt RAM ve çok hızlı bir bağlantı. Ağ ayrıca geçmişinde birkaç kez tamamen durdu (en son Şubat 2024'te) ve [[validator]]'ları tarafından yeniden başlatıldı.`,
         expert: `[[proof-of-history]], sıralı bir [[sha-256]] zinciridir: \`hₙ = SHA-256(hₙ₋₁)\`; [[transaction]] [[hash]]'leri geldikleri noktada diziye karıştırılır. Üretimi doğası gereği sıralıdır, ama doğrulaması öyle değildir: doğrulayan taraf diziyi parçalara böler ve bunları birçok çekirdekte kontrol eder. Bu, [[validator]]'ların önce mesajlaşmadan sıra ve geçen süre üzerinde anlaşmasını sağlayan doğrulanabilir bir saattir. [[consensus]] mekanizmasının kendisi değildir ve "Sybil" direnci sağlamaz; onu [[proof-of-stake]] sağlar.
 
-[[consensus]], PoH'u saat olarak kullanan, PBFT'den türetilmiş **Tower BFT**'dir. Bir "fork" üzerindeki her oy, üstüne verilen her ardışık oyla iki katına çıkan bir "lockout" taşır; bir [[block]], bir [[validator]]'ın oy kulesinde 32 onaya ulaşınca "root" olur. [[stake]]'in üçte ikisinden fazlası oy verdiğinde gelen "optimistic confirmation" genellikle bir saniye civarında gerçekleşir; tam [[finality]] kabaca 13 saniye sürer. [[validator]]'lar 2025'te Alpenglow adlı bir yeniden tasarımı onayladı; bu tasarım Tower BFT'yi ve PoH tabanlı oylamayı daha hızlı bir [[finality]] protokolüyle değiştiriyor. Okuduğun tarihte devrede olup olmadığını kontrol et.
+[[consensus]], PoH'u saat olarak kullanan, PBFT'den türetilmiş **Tower BFT**'dir. Bir "fork" üzerindeki her oy, üstüne verilen her ardışık oyla iki katına çıkan bir "lockout" taşır; bir [[block]], bir [[validator]]'ın oy kulesinde 32 onaya ulaşınca "root" olur. [[stake]]'in üçte ikisinden fazlası oy verdiğinde gelen "optimistic confirmation" genellikle bir saniye civarında gerçekleşir; tam [[finality]] yaklaşık 32 [[slot]] sürer: 250 milisaniyelik [[slot]]'larla kabaca 8 saniye ([[slot]]'lar 400 milisaniyeyken yaklaşık 13 saniyeydi). [[validator]]'lar 2025'te Alpenglow adlı bir yeniden tasarımı onayladı; bu tasarım Tower BFT'yi ve PoH'u, yaklaşık 150 milisaniyede [[finality]] hedefleyen bir protokolle değiştiriyor. Ekim 2026 itibarıyla "mainnet"'te henüz devreye alınmadı.
 
 Çalışma ortamı **Sealevel**, her [[transaction]]'ın bildirdiği hesaplara okuma ve yazma kilitleri koyarak [[transaction]]'ları paralel çalıştırır. Programların kendi durumu yoktur; bütün durum, çağıranın verdiği hesaplarda yaşar. Çekişmeli hesaplar yerel ücret piyasaları oluşturur: "priority fee" hesaplama birimi başına teklif edilir ve yalnızca aynı yazma kilidi için yarışanları ilgilendirir.
 
@@ -148,7 +148,7 @@ Avalanche ayrıca bir projenin, ana zincirin yanında, kendi kurallarıyla **ken
 
 Her turda bir [[validator]], ([[stake]] ağırlıklı) küçük bir rastgele gruba hangi [[block]]'u tercih ettiklerini sorar. Örneklemin yeterince büyük bir çoğunluğu aynı fikirdeyse [[validator]] o tercihi benimser. Aynı sonuçla yeterince ardışık turdan sonra [[block]]'u kesinleşmiş sayar. Ağ ne kadar büyük olursa olsun [[validator]] başına düşen iş aşağı yukarı aynı kalır.
 
-Kabaca değerler, 2026 itibarıyla: yaklaşık 1–2 saniyede [[finality]] ve ana ağda, her biri en az 2.000 AVAX [[stake]] eden, bin mertebesinde [[validator]].
+Kabaca değerler, 2026 itibarıyla: yaklaşık 1–2 saniyede [[finality]] ve ana ağda, her biri en az 2.000 AVAX [[stake]] eden, birkaç yüz [[validator]] (kabaca 600).
 
 Ana ağ farklı işleri olan üç zincir çalıştırır; C-Chain üzerinde [[evm]] çalışır, yani Ethereum "contract"'ları ve [[wallet]]'ları orada da işler. Bunun ötesinde herkes kendi [[validator]]'ları, kendi ücret token'ı ve kendi kuralları olan ayrı bir zincir, yani bir [[subnet]] (2024 sonundan beri adıyla Avalanche L1) başlatabilir. Kapasite, tek bir zinciri büyüterek değil, zincir ekleyerek artırılır.`,
         expert: `Snow ailesi (Slush, Snowflake, Snowball ve üretimde kullanılan, zincir sıralayan türev **Snowman**) "leader"'sız, olasılıksal bir [[consensus]] ailesidir. Her turda bir [[node]], [[stake]]'e göre \`k\` [[validator]] örnekler; bunların en az \`α\` tanesi aynı değeri tercih ediyorsa yoklama başarılıdır: [[node]]'un o değere güveni artar, gerekiyorsa tercihini değiştirir. Art arda \`β\` başarılı yoklamadan sonra karar verir. Ana ağda \`k = 20\`, \`α = 15\`, \`β = 20\` civarında değerler kullanıldı (yaklaşık; güncellemelerle ayarlandı).
@@ -220,8 +220,8 @@ Artılar ve eksiler: bir transferde güvenilen şey üçüncü taraf bir köprü
 Hiçbiri ilk adımdaki üçgenden kurtulmadı. Her biri hangi köşeden ne kadar uzaklaşacağına karar verdi. Bir zincirin "daha hızlı" ya da "daha ucuz" olduğunu duyduğunda sorulacak asıl soru şu: **oraya varmak için neden vazgeçti?**`,
         intermediate: `Yaklaşık değerler, 2026 itibarıyla:
 
-- Solana: yaklaşık 0,4 saniyede bir [[block]]; tam [[finality]] kabaca 13 saniye (daha hızlı bir onay genellikle bir saniye civarında gelir); bin mertebesinde [[validator]]; sunucu sınıfı donanım.
-- Avalanche: yaklaşık 1–2 saniyede [[finality]]; ana ağda bin mertebesinde [[validator]]; mütevazı donanım; ek kapasite, her biri kendi [[validator]]'larına sahip ayrı L1'lerle sağlanır.
+- Solana: yaklaşık 0,25 saniyede bir [[block]]; tam [[finality]] kabaca 8 saniye (daha hızlı bir onay genellikle bir saniye civarında gelir); birkaç yüz [[validator]]; sunucu sınıfı donanım.
+- Avalanche: yaklaşık 1–2 saniyede [[finality]]; ana ağda birkaç yüz [[validator]]; mütevazı donanım; ek kapasite, her biri kendi [[validator]]'larına sahip ayrı L1'lerle sağlanır.
 - Cosmos zincirleri: 1–6 saniyede bir [[block]], anında kesin; zincir başına genellikle 100–200 [[validator]]; mütevazı donanım; zincirler [[ibc]] ile bağlı.
 - Karşılaştırma için Ethereum: 12 saniyelik [[slot]]'lar, yaklaşık 13 dakika sonra [[finality]], yüz binlerce [[validator]] anahtarı, tüketici sınıfı donanım.
 

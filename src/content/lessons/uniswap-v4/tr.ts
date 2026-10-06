@@ -71,7 +71,7 @@ Değişenler:
 [[singleton]], bütün havuzların [[token]]'larını para birimi başına tek bir bakiyede tutar. Hangi havuzun neye sahip olduğu yalnızca bir muhasebe kaydıdır; bir sonraki adımı mümkün kılan da budur.`,
       },
       code: {
-        lang: 'Solidity (v4-core)',
+        lang: 'Solidity (v4-core, kısaltılmış)',
         source: `struct PoolKey {
     Currency currency0;    // küçük olan adres; address(0) native ETH demektir
     Currency currency1;
@@ -159,7 +159,7 @@ Bir [[hook]] yalnızca ihtiyaç duyduğu noktaları uygular. Yapılmış örnekl
 - v3'te yerleşik olan, v4'ün ise [[hook]]'lara bıraktığı fiyat "oracle"'ı.
 
 [[hook]], senin takasına ya da likiditene dokunan bir koddur. Bir havuzu kullanan kişi, Uniswap'in yanında o havuzun [[hook]]'una da güvenmek zorundadır.`,
-        expert: `Bir [[hook]]'un hangi geri çağrıları alacağı **adresinde** kodludur. En düşük 14 bit izin bayraklarıdır: \`BEFORE_INITIALIZE_FLAG = 1 << 13\` ile başlar, \`AFTER_REMOVE_LIQUIDITY_RETURNS_DELTA_FLAG = 1 << 0\` ile biter; \`BEFORE_SWAP_FLAG\` \`1 << 7\`, \`AFTER_SWAP_FLAG\` ise \`1 << 6\`'dır. [[pool-manager]], \`uint160(address(key.hooks)) & flag\` değerine bakar ve bit sıfırsa çağrıyı atlar; böylece depolamadan okuma gerekmez. Kurulumu yapanlar, adres doğru bitleri taşıyana kadar bir \`CREATE2\` "salt"'ı arar; \`initialize\` de adresi uyguladığı fonksiyonlarla uyuşmayan bir [[hook]]'u reddeder.
+        expert: `Bir [[hook]]'un hangi geri çağrıları alacağı **adresinde** kodludur. En düşük 14 bit izin bayraklarıdır: \`BEFORE_INITIALIZE_FLAG = 1 << 13\` ile başlar, \`AFTER_REMOVE_LIQUIDITY_RETURNS_DELTA_FLAG = 1 << 0\` ile biter; \`BEFORE_SWAP_FLAG\` \`1 << 7\`, \`AFTER_SWAP_FLAG\` ise \`1 << 6\`'dır. [[pool-manager]], \`uint160(address(key.hooks)) & flag\` değerine bakar ve bit sıfırsa çağrıyı atlar; böylece depolamadan okuma gerekmez. Kurulumu yapanlar, adres doğru bitleri taşıyana kadar bir \`CREATE2\` "salt"'ı arar. [[pool-manager]], sözleşmenin bayrağı taşıyan geri çağrıları gerçekten uygulayıp uygulamadığını denetlemez: [[hook]]'lar genellikle kendi adreslerini "constructor" içinde doğrular (\`Hooks.validateHookPermissions\`); \`initialize\` ise yalnızca tutarsız bayrak bileşimlerini \`HookAddressNotValid\` ile reddeder.
 
 Her geri çağrı kendi "selector"'ını döndürmek zorundadır. \`beforeSwap\` buna ek olarak bir \`BeforeSwapDelta\` ve \`uint24\` türünde bir ücret değeri döndürür. \`*_RETURNS_DELTA\` bayraklarıyla bir [[hook]], takasın bir kısmını kendisi alabilir ya da karşılayabilir; standart havuzun üzerine özel eğriler ve [[hook]]'un sahip olduğu likidite böyle kurulur.
 
@@ -168,13 +168,13 @@ Her geri çağrı kendi "selector"'ını döndürmek zorundadır. \`beforeSwap\`
 Riskler gerçektir. Bir [[hook]] yükseltilebilir olabilir, kendi ücretini kesebilir; likidite çıkarma geri çağrılarına sahip olanı da çekimleri başarısız kılabilir. Ayrıca her farklı \`hooks\` adresi ayrı bir havuz demektir; yani bir çiftin likiditesi v3'tekinden daha çok havuza bölünür.`,
       },
       code: {
-        lang: 'Solidity (v4-core: IHooks.sol, Hooks.sol)',
+        lang: 'Solidity (v4-core: IHooks.sol, Hooks.sol, kısaltılmış)',
         source: `function beforeSwap(
     address sender,
     PoolKey calldata key,
     SwapParams calldata params,
     bytes calldata hookData
-) external returns (bytes4 selector, BeforeSwapDelta delta, uint24 lpFeeOverride);
+) external returns (bytes4, BeforeSwapDelta, uint24);   // selector, hook'un deltası, LP ücreti geçersiz kılması
 
 function afterSwap(
     address sender,
@@ -182,11 +182,11 @@ function afterSwap(
     SwapParams calldata params,
     BalanceDelta delta,
     bytes calldata hookData
-) external returns (bytes4 selector, int128 hookDelta);
+) external returns (bytes4, int128);   // selector, hook'un deltası
 
 // izinler, hook adresinin düşük bitlerinde durur
-uint160 constant BEFORE_SWAP_FLAG = 1 << 7;
-uint160 constant AFTER_SWAP_FLAG  = 1 << 6;
+uint160 internal constant BEFORE_SWAP_FLAG = 1 << 7;
+uint160 internal constant AFTER_SWAP_FLAG = 1 << 6;
 // ...00C0 ile biten bir adres tam olarak bu iki geri çağrıyı alır`,
       },
     },

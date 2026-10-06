@@ -15,6 +15,7 @@ import type { SceneProps } from '../scene/types';
 import { useStore } from '../state/store';
 import { LEVELS, type Level } from '../types';
 import { swipeHandlers, useLessonContent, useReducedMotion, useSceneModule } from './hooks';
+import { Celebrate } from './Celebrate';
 import { LevelSwitch } from './LevelSwitch';
 import { StepControls } from './StepControls';
 
@@ -50,6 +51,11 @@ export function LessonPage() {
   const [present, setPresent] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const [lost, setLost] = useState(false);
+  // Holds the id of the lesson being celebrated, so it clears itself when the lesson changes.
+  const [celebrated, setCelebrated] = useState<string | null>(null);
+  const celebrate = celebrated === lessonId;
+  const [hint, setHint] = useState(true);
+  const [nav, setNav] = useState({ step: stepIndex, level, dir: 'same' });
   const textRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -59,11 +65,27 @@ export function LessonPage() {
   useEffect(() => {
     if (!lesson) return;
     setLastVisited(lessonId, stepIndex);
-    if (stepIndex === stepCount - 1) markComplete(lessonId);
+    if (stepIndex === stepCount - 1) {
+      // Only the first time a lesson is finished.
+      if (!useStore.getState().completed.includes(lessonId)) setCelebrated(lessonId);
+      markComplete(lessonId);
+    }
     textRef.current?.scrollTo({ top: 0 });
   }, [lesson, lessonId, stepIndex, stepCount, setLastVisited, markComplete]);
 
   useEffect(() => setLost(false), [lessonId, attempt]);
+
+  useEffect(() => {
+    if (!celebrate) return;
+    const t = setTimeout(() => setCelebrated(null), 3200);
+    return () => clearTimeout(t);
+  }, [celebrate]);
+
+  // The controls hint steps aside once the scene has been touched, or after a while.
+  useEffect(() => {
+    const t = setTimeout(() => setHint(false), 9000);
+    return () => clearTimeout(t);
+  }, []);
 
   const go = useCallback(
     (i: number) => {
@@ -120,6 +142,12 @@ export function LessonPage() {
   const Scene = mod?.default;
   const Controls = mod?.Controls;
   const noGl = !hasWebGL() || lost;
+  // Text slides in from the side you are moving towards.
+  if (nav.step !== stepIndex || nav.level !== level) {
+    setNav({ step: stepIndex, level, dir: stepIndex > nav.step ? 'fwd' : stepIndex < nav.step ? 'back' : 'same' });
+  }
+  const dir = nav.dir;
+  const progress = ((stepIndex + 1) / stepCount) * 100;
 
   const fallback = (note: string, canRetry: boolean) => (
     <Fallback lessonId={lessonId} stepId={stepId} alt={stepContent.alt} note={note} retryLabel={ui(lang, 'retry')} onRetry={canRetry ? retry : undefined} />
@@ -127,7 +155,10 @@ export function LessonPage() {
 
   return (
     <div className="lesson" data-present={present || undefined}>
-      <section className="lesson-scene" aria-label={stepContent.alt}>
+      <section className="lesson-scene" aria-label={stepContent.alt} onPointerDown={() => setHint(false)}>
+        <div className="lesson-progress" aria-hidden="true">
+          <span style={{ width: `${progress}%` }} />
+        </div>
         {noGl ? (
           // A lost context can often be recreated; a device without WebGL cannot.
           fallback(ui(lang, 'sceneUnavailable'), lost)
@@ -143,7 +174,12 @@ export function LessonPage() {
           <p className="scene-loading">{ui(lang, 'sceneLoading')}</p>
         )}
 
-        {!noGl && !present && <p className="scene-hint">{ui(lang, 'dragHint')}</p>}
+        {!noGl && !present && (
+          <p className="scene-hint" data-hidden={!hint || undefined}>
+            {ui(lang, 'dragHint')}
+          </p>
+        )}
+        {celebrate && <Celebrate title={ui(lang, 'lessonComplete')} note={ui(lang, 'blockAdded')} />}
 
         <div className="scene-tools">
           {!noGl && (
@@ -178,11 +214,12 @@ export function LessonPage() {
       <section className="lesson-text" ref={textRef} {...swipe}>
         <header className="lesson-head">
           <p className="crumbs">
-            {ui(lang, `chapter.${lesson.meta.chapter}`)} · {lesson.meta.title[lang]}
+            <span data-chapter={lesson.meta.chapter}>{ui(lang, `chapter.${lesson.meta.chapter}`)}</span>
+            <strong>{lesson.meta.title[lang]}</strong>
           </p>
           <LevelSwitch lang={lang} level={level} onChange={changeLevel} />
         </header>
-        <article className="prose" key={`${stepId}:${level}`}>
+        <article className="prose" key={`${stepId}:${level}`} data-dir={dir}>
           <h1>{stepContent.title}</h1>
           <Rich text={stepContent.body[level]} lang={lang} />
           {level === 'expert' && stepContent.code && (

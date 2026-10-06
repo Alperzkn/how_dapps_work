@@ -18,7 +18,7 @@ const content: LessonContent = {
     weakSca: 'slower',
     design: 'a design',
     poh: 'PoH clock',
-    slot: 'slot ≈ 400 ms',
+    slot: 'slot ≈ 250 ms',
     leader: 'leader',
     parallel: 'different accounts:\nat the same time',
     parallelE: 'disjoint write sets\n→ parallel',
@@ -41,7 +41,7 @@ const content: LessonContent = {
     lightClient: 'light client of A',
     relayer: 'relayer',
     solB: 'one very fast chain\nneeds powerful machines',
-    solI: 'blocks ≈ 0.4 s\nfinal ≈ 13 s',
+    solI: 'blocks ≈ 0.25 s\nfinal ≈ 8 s',
     solE: 'PoH + Tower BFT\nSealevel: parallel',
     avaB: 'agreement by quick polls\nmany custom chains',
     avaI: 'blocks ≈ 1–2 s\nfinal ≈ 1–2 s',
@@ -97,16 +97,16 @@ It does two unusual things. First, it has a built-in **clock**. Before agreeing 
 Second, it does many things **at the same time**. If one payment is between Alice and Bob and another between Carol and Dave, they have nothing to do with each other and can run side by side, like cars in separate lanes. Two payments that touch the same account still have to wait for each other.
 
 The price of this speed is that the computers running Solana have to be powerful and well connected, far more than a home laptop.`,
-        intermediate: `[[solana]] produces a block roughly every 400 milliseconds. Time is cut into [[slot|slots]], and a schedule published in advance says which [[validator]] is the leader for each one.
+        intermediate: `[[solana]] produces a block roughly every 250 milliseconds (as of October 2026; it was 400 milliseconds until August 2026 and is being lowered in stages towards 200). Time is cut into [[slot|slots]], and a schedule published in advance says which [[validator]] is the leader for each one.
 
 **The clock.** [[proof-of-history]] is the leader's clock. It runs a [[hash]] function over and over, each output feeding the next, and mixes incoming transactions into that sequence. Because the chain of hashes can only be produced one step after another, it proves that time passed and fixes the order of transactions inside the block.
 
 **The lanes.** [[parallel-execution]] works because every Solana transaction lists up front which accounts it will read and which it will write. The runtime uses this list to run transactions that do not touch the same accounts on different CPU cores.
 
-Rough figures, as of 2026: on the order of a thousand user transactions per second in practice, with a much higher theoretical ceiling; on the order of a thousand validators; fees usually a small fraction of a cent. Validators need server-grade hardware: many CPU cores, hundreds of gigabytes of RAM and a very fast connection. The network has also stopped completely several times in its history, most recently in February 2024, and was restarted by its validators.`,
+Rough figures, as of 2026: roughly one to a few thousand user transactions per second in practice, with a much higher theoretical ceiling; several hundred validators; fees usually a small fraction of a cent. Validators need server-grade hardware: many CPU cores, hundreds of gigabytes of RAM and a very fast connection. The network has also stopped completely several times in its history, most recently in February 2024, and was restarted by its validators.`,
         expert: `[[proof-of-history]] is a sequential SHA-256 chain, \`hₙ = SHA-256(hₙ₋₁)\`, with transaction hashes mixed in at the points where they arrive. Generating it is inherently sequential, but verifying it is not: a verifier splits the sequence into segments and checks them on many cores. It is a verifiable clock that lets validators agree on ordering and on elapsed time without exchanging messages first. It is not the consensus mechanism and provides no Sybil resistance; that comes from [[proof-of-stake]].
 
-Consensus is **Tower BFT**, a PBFT-derived protocol that uses PoH as its clock. Each vote on a fork carries a lockout that doubles with every consecutive vote on top of it; once a block has 32 confirmations on a validator's vote tower it is rooted. Optimistic confirmation, when more than two thirds of stake has voted, typically arrives within a second or so; full [[finality]] takes roughly 13 seconds. Validators approved a redesign called Alpenglow in 2025, which replaces Tower BFT and PoH-based voting with a faster finality protocol; check its deployment status for the date you read this.
+Consensus is **Tower BFT**, a PBFT-derived protocol that uses PoH as its clock. Each vote on a fork carries a lockout that doubles with every consecutive vote on top of it; once a block has 32 confirmations on a validator's vote tower it is rooted. Optimistic confirmation, when more than two thirds of stake has voted, typically arrives within a second or so; full [[finality]] takes about 32 slots: roughly 8 seconds with 250 ms slots (it was about 13 seconds when slots were 400 ms). Validators approved a redesign called Alpenglow in 2025, which replaces Tower BFT and PoH with a protocol that targets finality in roughly 150 milliseconds. As of October 2026 it has not been activated on mainnet.
 
 The runtime, **Sealevel**, executes transactions in parallel by taking read and write locks on the accounts each transaction declares. Programs hold no state of their own; all state lives in accounts passed in by the caller. Contended accounts form local fee markets: priority fees are bid per compute unit and matter only to those competing for the same write lock.
 
@@ -144,7 +144,7 @@ Avalanche also lets a project start **its own chain** with its own rules, next t
 
 Each round, a validator asks a small random sample of others (weighted by [[stake]]) which block they prefer. If a large enough majority of the sample agrees, the validator adopts that preference. After enough consecutive rounds with the same result, it treats the block as final. The work per validator stays about the same however large the network is.
 
-Rough figures, as of 2026: [[finality]] in about 1 to 2 seconds, and on the order of a thousand validators on the main network, each staking at least 2,000 AVAX.
+Rough figures, as of 2026: [[finality]] in about 1 to 2 seconds, and several hundred validators on the main network (roughly 600), each staking at least 2,000 AVAX.
 
 The main network runs three chains with different jobs; the C-Chain runs the [[evm]], so Ethereum contracts and wallets work on it. Beyond that, anyone can launch a separate chain, a [[subnet]] (since late 2024 called an Avalanche L1), with its own validators, its own fee token and its own rules. Capacity is added by adding chains rather than by making one chain bigger.`,
         expert: `The Snow family (Slush, Snowflake, Snowball, and the chain-ordering variant **Snowman** used in production) is a leaderless, probabilistic consensus. Per round a node samples \`k\` validators by stake; if at least \`α\` of them prefer the same value, that is a successful poll and the node's confidence in that value grows, switching preference if needed. After \`β\` consecutive successful polls the node decides. Mainnet has used values around \`k = 20\`, \`α = 15\`, \`β = 20\` (approximate; they have been tuned in upgrades).
@@ -216,8 +216,8 @@ Trade-offs: the trust assumption for a transfer is the validator sets of the two
 None of them escaped the triangle from the first step. Each one decided which corner to lean away from, and by how much. When you hear that a chain is "faster" or "cheaper", the useful question is: **what did it give up to get there?**`,
         intermediate: `Approximate figures, as of 2026:
 
-- [[solana]]: blocks about every 0.4 s; full [[finality]] roughly 13 s (a quicker confirmation usually arrives within about a second); on the order of a thousand validators; server-grade hardware.
-- [[avalanche]]: finality in about 1 to 2 s; on the order of a thousand validators on the main network; modest hardware; extra capacity through separate L1s, each with its own validators.
+- [[solana]]: blocks about every 0.25 s; full [[finality]] roughly 8 s (a quicker confirmation usually arrives within about a second); several hundred validators; server-grade hardware.
+- [[avalanche]]: finality in about 1 to 2 s; several hundred validators on the main network; modest hardware; extra capacity through separate L1s, each with its own validators.
 - [[cosmos]] chains: blocks every 1 to 6 s, final immediately; typically 100 to 200 validators per chain; modest hardware; chains linked by [[ibc]].
 - For comparison, Ethereum: 12 s [[slot|slots]], finality after about 13 minutes, hundreds of thousands of validator keys, consumer hardware.
 

@@ -216,14 +216,14 @@ Ethereum'da böyle bir tavan yok. Yeni [[ether]], ağı güvende tutan [[validat
 
 **Arz.** Bitcoin'de [[block-reward]] 50 BTC ile başladı ve her 210.000 [[block]]'ta yarılanıyor: 25, 12.5, 6.25 ve Nisan 2024'ten beri 3.125 BTC. Bunların hepsini toplarsan 21 milyonun hemen altında bir sayı çıkar; bu sayıya 2140 yılı civarında ulaşılacak. Ondan sonra [[miner]]'lar yalnızca ücretlerle ödeme alacak.
 
-Ethereum, [[validator]]'lara [[staking]] ödülü olarak yeni [[ether]] basar. Miktar ne kadar [[stake]] olduğuna bağlıdır ve yılda arzın %1'inin epey altındadır (kabaca, 2026 itibarıyla). Öbür tarafta [[eip-1559]] her [[transaction]]'ın "base fee" kısmını yakar. Ağ yoğunken yakılan miktar basılanı geçebilir ve arz azalır; ağ sakinken arz yavaşça artar.
+Ethereum, [[validator]]'lara [[staking]] ödülü olarak yeni [[ether]] basar. Miktar ne kadar [[stake]] olduğuna bağlıdır ve yılda arzın %1'inin biraz altındadır (kabaca, 2026 itibarıyla). Öbür tarafta [[eip-1559]] her [[transaction]]'ın "base fee" kısmını yakar. Ağ yoğunken yakılan miktar basılanı geçebilir ve arz azalır; ağ sakinken arz yavaşça artar.
 
 Birinin politikası önceden sabitlenmiştir ve kullanımdan bağımsızdır. Diğerininki, kaç kişinin [[stake]] ettiğine ve zincirin ne kadar kullanıldığına göre değişir.`,
         expert: `Bitcoin'de \`h\` yüksekliğindeki "subsidy" \`50 BTC >> ⌊h / 210.000⌋\` kadardır ve tam sayı [[satoshi]] cinsinden hesaplanır (1 BTC = 10^8). Bu yüzden toplam 20.999.999,9769 BTC'ye yakınsar ve "subsidy" 33 [[halving]] sonra sıfıra iner. [[block]] aralıkları 10 dakikalık hedefin etrafında üstel dağılır; [[target]] her 2.016 [[block]]'ta bir, ayar başına en çok 4 katla sınırlı olarak yeniden belirlenir. Kesinleşme olasılıksaldır: bir [[reorg]] ihtimali derinlikle geometrik olarak düşer; 6 [[confirmation]] alışkanlığı buradan gelir.
 
 Ethereum'un 12 saniyelik [[slot]]'u bir ortalama değil, bir takvimdir: kaçırılan bir [[slot]]'ta [[block]] olmaz. [[finality]], art arda iki [[epoch]] "justified" olduğunda [[casper-ffg]] ile gelir; normal işleyişte yaklaşık 12,8 dakika.
 
-Basım, toplam [[stake]]'in kareköküyle ölçeklenir: [[validator]] başına taban ödül \`1 / √(toplam stake)\` ile orantılıdır, dolayısıyla toplam basım \`√(toplam stake)\` ile büyür. Bütün [[ether]]'in kabaca dörtte biri ile üçte biri arası [[stake]] edilmişken (2026 itibarıyla) bu, yılda bir milyon ETH mertebesinde ya da altındadır. Net değişim:
+Basım, toplam [[stake]]'in kareköküyle ölçeklenir: [[stake]] edilen [[ether]] başına taban ödül \`1 / √(toplam stake)\` ile orantılıdır, dolayısıyla toplam basım \`√(toplam stake)\` ile büyür. Bütün [[ether]]'in üçte birinden biraz fazlası [[stake]] edilmişken (2026 itibarıyla) bu, yılda bir milyon ETH mertebesindedir. Net değişim:
 
 \`Δarz = basım − Σ (baseFee × gasUsed) − blob ücreti yakımı\`
 

@@ -96,7 +96,7 @@ Details that matter:
 - \`k\` must stay secret and never repeat. Two signatures made with the same \`k\` reveal \`d\`. Wallets derive \`k\` deterministically (RFC 6979).
 - The transaction has no sender field. Nodes recover \`Q\` from \`(h, r, s, yParity)\` and derive the [[address]] from it.
 - \`(r, n − s)\` is a valid signature too, so Ethereum accepts only \`s ≤ n/2\` (EIP-2). Otherwise a third party could alter the transaction hash.
-- \`chainId\` is part of the digest (EIP-155), so a signature cannot be replayed on another chain.
+- \`chainId\` is part of the digest (replay protection introduced by EIP-155), so a signature cannot be replayed on another chain.
 
 The [[account-nonce]] must equal the sender's nonce in state at the moment the transaction executes. A lower one is rejected; a higher one has to wait.`,
       },
@@ -138,7 +138,7 @@ If so, it stores the transaction and announces it to its peers, which repeat the
 Nothing has changed on the [[ledger]] yet. The network knows about the transaction, but it is not in a [[block]].`,
         expert: `The wallet submits the raw signed bytes with the [[json-rpc]] method \`eth_sendRawTransaction\`, which returns the transaction hash: \`keccak256\` of the full signed encoding. The hash is known before inclusion; a receipt exists only afterwards.
 
-On Ethereum's execution layer, transactions spread over devp2p (the \`eth\` protocol, version 68). A node sends the full transaction to a small subset of its peers and announces only the hash to the rest with \`NewPooledTransactionHashes\`; a peer that lacks it asks with \`GetPooledTransactions\`. Bitcoin does the same with \`inv\`, \`getdata\` and \`tx\` messages.
+On Ethereum's execution layer, transactions spread over devp2p (the \`eth\` protocol). A node sends the full transaction to a small subset of its peers and announces only the hash to the rest with \`NewPooledTransactionHashes\`; a peer that lacks it asks with \`GetPooledTransactions\`. Bitcoin announces every transaction with \`inv\`; a peer that lacks it replies \`getdata\` and receives the \`tx\` message.
 
 Checks before a node admits and relays a transaction: the encoding is well formed, the signature recovers, \`nonce ≥\` the account nonce, \`balance ≥ gasLimit × maxFeePerGas + value\`, \`gasLimit ≥\` the intrinsic [[gas]] (21000 for a plain transfer), and the fee meets the node's own minimum.
 
