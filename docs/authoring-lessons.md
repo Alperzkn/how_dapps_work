@@ -20,7 +20,7 @@ levels and interaction are specified in section 3 of
 
 ## Content
 
-- 4–7 steps. Each step has `title`, `alt` (one or two sentences describing what
+- 4–7 steps (up to 8 when a step exists mainly for an interaction). Each step has `title`, `alt` (one or two sentences describing what
   the scene shows), `body.beginner`, `body.intermediate`, `body.expert`, and an
   optional `code` panel (shown at expert level; must exist in both languages,
   comments translated).
@@ -102,6 +102,51 @@ A scene is a React component rendered inside the canvas. It receives
   `.ctl-stats`, `.ctl-stat`, `.btn` classes), sharing state with the scene
   through a zustand store in `state.ts`. Return `null` on steps without
   controls. Numbers come from `src/sim/*`; never show `NaN` or `Infinity`.
+
+## Interaction
+
+The course is meant to be played with, not watched. Aim for a hands-on control
+on most steps of a lesson (at least three steps), each answering a question
+the learner would naturally ask: "what if I change this?"
+
+- Every control changes something visible in the 3D scene **and** a number or
+  status in the panel. A control that only changes text is not enough.
+- Prefer real computation over canned animation: real hashes (`src/sim/sha256`),
+  real keys, signatures, Keccak and ABI encoding (`src/sim/keys`), real AMM
+  math (`src/sim/ammV2`, `ammV3`, `v4Hook`), real mining (`src/sim/pow`).
+- Lesson-specific logic goes in `src/scenes/<id>/logic.ts` as pure functions,
+  with unit tests next to it in `logic.test.ts` covering normal values and the
+  extremes of every slider (zero, maximum, reversed ranges). Never show `NaN`
+  or `Infinity`.
+- State lives in a zustand store in `src/scenes/<id>/state.ts`, shared by
+  `Scene` and `Controls`. Reset interaction state when it would confuse a
+  later step.
+- Controls are plain HTML inside `<div className="ctl">`. Available classes:
+  `.ctl-title` (one short prompt line, e.g. "Try it: raise the tip"),
+  `.ctl-field` (label + `input[type=range|text|number]` or `select`),
+  `.ctl-check` (label + checkbox), `.seg` (segmented buttons with
+  `aria-pressed`), `.btn` / `.btn btn-primary`, `.ctl-stats` > `.ctl-stat`
+  (`<span>` name, `<strong>` value; `data-tone="good|bad"` colors it).
+  Every input has a visible label. Buttons say what they do.
+- Keep the panel to two or three rows; on a 390px phone it must not hide the
+  part of the scene it controls. Put secondary numbers in the scene as labels.
+- The scene must still make sense untouched: defaults show the typical case,
+  and with reduced motion the step rests on a meaningful state.
+- All strings come from `labels` in both languages.
+
+### Glossary ids for the added lessons
+
+| Lesson | Term ids it owns |
+|---|---|
+| layer2 | layer-2, rollup, optimistic-rollup, zk-rollup, sequencer, data-availability, blob, bridge, fraud-proof, validity-proof |
+| smart-contracts | bytecode, contract-account, eoa, storage-slot, revert, deployment, contract-state, reentrancy |
+| tokens | erc-721, nft, allowance, mint, burn, decimals, stablecoin, wrapped-token, total-supply |
+| mev | mev, front-running, sandwich-attack, back-running, searcher, block-builder, private-mempool, slippage-tolerance, mev-boost |
+
+The other lessons' ids are in the allocation table in
+`docs/superpowers/plans/2026-10-06-how-dapps-work.md`. Any lesson may reference
+any id from either table. To see every id that exists right now:
+`grep -ho "id: '[a-z0-9-]*'" src/content/glossary/terms/*.ts`.
 
 ## Checking
 

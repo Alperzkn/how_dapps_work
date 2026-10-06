@@ -2,7 +2,7 @@ import type { LessonMeta } from '../../../types';
 
 const meta: LessonMeta = {
   id: 'uniswap-v3',
-  chapter: 'dapps',
+  chapter: 'defi',
   title: { en: 'Uniswap v3', tr: 'Uniswap v3' },
   summary: {
     en: 'Liquidity providers choose a price range, so the same money gives far deeper markets where trading actually happens.',

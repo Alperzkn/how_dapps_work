@@ -4,11 +4,11 @@ import { lessons } from '../content/registry';
 import { ui } from '../i18n/ui';
 import { useReducedMotion } from '../lesson/hooks';
 import { useStore } from '../state/store';
-import type { ChapterId } from '../types';
+import { CHAPTERS, type ChapterId } from '../types';
 import { lessonPath } from './parseRoute';
 
 // The course drawn as what it teaches: a chain of blocks, one per lesson,
-// stepping down through the four chapters. Plain SVG, so the home page needs no 3D code.
+// stepping down through the chapters. Plain SVG, so the home page needs no 3D code.
 
 const K = 40; // screen px per grid unit
 const H = 20; // block height in px
@@ -16,13 +16,14 @@ const S = 0.5; // half a block's footprint, in grid units
 const iso = (x: number, y: number): [number, number] => [(x - y) * K, ((x + y) * K) / 2];
 
 /** Grid position of each lesson: runs alternate direction at every chapter, like a staircase. */
-const G = 2.4; // grid distance between neighbouring lessons
+const G = 2.2; // grid distance between neighbouring lessons
 const SPOTS: [number, number][] = (
   [
     [0, 0], [1, 0], [2, 0],
     [2, 1], [2, 2],
-    [3, 2], [4, 2],
-    [4, 3], [5, 3], [6, 3], [7, 3],
+    [3, 2], [4, 2], [5, 2],
+    [5, 3], [5, 4], [5, 5],
+    [6, 5], [7, 5], [8, 5], [9, 5],
   ] as [number, number][]
 ).map(([x, y]) => [x * G, y * G]);
 
@@ -30,7 +31,8 @@ const CHAPTER_COLOR: Record<ChapterId, string> = {
   basics: 'var(--c-block)',
   consensus: 'var(--c-actor)',
   l1: 'var(--c-token-b)',
-  dapps: 'var(--c-token-a)',
+  dapps: 'var(--c-tx)',
+  defi: 'var(--c-token-a)',
 };
 
 const pts = (list: [number, number][]) => list.map((p) => p.join(',')).join(' ');
@@ -75,7 +77,7 @@ export function CourseMap() {
     .join(' ');
 
   // One slab per chapter under its run of blocks.
-  const slabs = (['basics', 'consensus', 'l1', 'dapps'] as ChapterId[]).flatMap((chapter) => {
+  const slabs = CHAPTERS.flatMap((chapter) => {
     const idx = lessons.map((l, i) => (l.meta.chapter === chapter ? i : -1)).filter((i) => i >= 0);
     if (!idx.length) return [];
     const xs = idx.map((i) => spots[i][0]);
@@ -89,7 +91,7 @@ export function CourseMap() {
 
   return (
     <div className="course-map">
-      <svg viewBox="-90 -66 566 606" role="group" aria-label={ui(lang, 'lessons')}>
+      <svg viewBox="-88 -64 560 744" role="group" aria-label={ui(lang, 'lessons')}>
         {slabs.map(({ chapter, poly }) => (
           <g key={chapter}>
             <polygon points={pts(poly.map(([sx, sy]) => [sx, sy + 9]))} fill="var(--line)" />

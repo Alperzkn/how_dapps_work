@@ -36,6 +36,7 @@ export function HomePage() {
         <div className="hero-text">
           <h1>{ui(lang, 'heroTitle')}</h1>
           <p>{ui(lang, 'tagline')}</p>
+          <p className="scope-note">{ui(lang, 'scopeNote')}</p>
 
           <LayoutGroup id="home-level">
             <div className="level-cards" role="group" aria-label={ui(lang, 'level')}>

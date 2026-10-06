@@ -16,7 +16,6 @@ export function StepControls({ lang, index, titles, onGo }: Props) {
       <button type="button" className="btn step-prev" onClick={() => onGo(index - 1)} disabled={index === 0}>
         <IconLeft />
         <span>{ui(lang, 'prev')}</span>
-        <kbd aria-hidden="true">←</kbd>
       </button>
       {/* The steps drawn as a small chain: each one a block linked to the next. */}
       <ol className="step-dots" aria-label={`${ui(lang, 'step')} ${index + 1} ${ui(lang, 'of')} ${titles.length}`}>
@@ -33,7 +32,6 @@ export function StepControls({ lang, index, titles, onGo }: Props) {
       </span>
       <button type="button" className="btn btn-primary step-next" onClick={() => onGo(index + 1)} disabled={index === last}>
         <span>{ui(lang, 'next')}</span>
-        <kbd aria-hidden="true">→</kbd>
         <IconRight />
       </button>
     </div>

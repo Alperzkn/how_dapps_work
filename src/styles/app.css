@@ -800,9 +800,6 @@ button {
   padding: 0 6px;
 }
 
-.level-switch button[aria-pressed='true'][data-level='beginner'] { box-shadow: inset 0 -3px 0 var(--c-valid), 0 1px 3px var(--shadow); }
-.level-switch button[aria-pressed='true'][data-level='intermediate'] { box-shadow: inset 0 -3px 0 var(--c-tx), 0 1px 3px var(--shadow); }
-.level-switch button[aria-pressed='true'][data-level='expert'] { box-shadow: inset 0 -3px 0 var(--c-invalid), 0 1px 3px var(--shadow); }
 
 .next-lesson {
   margin-top: 6px;
@@ -1697,7 +1694,8 @@ kbd {
 
 .crumbs span[data-chapter='consensus']::before { background: var(--c-actor); }
 .crumbs span[data-chapter='l1']::before { background: var(--c-token-b); }
-.crumbs span[data-chapter='dapps']::before { background: var(--c-token-a); }
+.crumbs span[data-chapter='dapps']::before { background: var(--c-tx); }
+.crumbs span[data-chapter='defi']::before { background: var(--c-token-a); }
 
 .crumbs strong {
   font: 700 1rem var(--font-display);
@@ -1721,11 +1719,8 @@ kbd {
   z-index: -1;
   border-radius: 6px;
   background: var(--surface);
-  box-shadow: inset 0 -3px 0 var(--c-valid), 0 1px 3px var(--shadow);
+  box-shadow: 0 1px 3px var(--shadow);
 }
-
-.seg-thumb[data-tone='intermediate'] { box-shadow: inset 0 -3px 0 var(--c-tx), 0 1px 3px var(--shadow); }
-.seg-thumb[data-tone='expert'] { box-shadow: inset 0 -3px 0 var(--c-invalid), 0 1px 3px var(--shadow); }
 
 .prose h1 {
   font-size: 1.6rem;
@@ -1943,4 +1938,62 @@ kbd {
 .term-title h2 {
   font-size: 1.6rem;
   letter-spacing: -0.02em;
+}
+
+
+.scope-note {
+  padding-left: 12px;
+  border-left: 3px solid var(--line);
+  font-size: 0.92rem !important;
+}
+
+/* ---------- More building blocks for scene controls ---------- */
+
+.ctl-title {
+  flex-basis: 100%;
+  font: 700 0.82rem var(--font-display);
+  color: var(--accent);
+}
+
+.ctl-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.ctl-check input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+}
+
+.ctl .seg button {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 0.84rem;
+}
+
+.ctl-stat strong[data-tone='good'] { color: var(--c-valid); }
+.ctl-stat strong[data-tone='bad'] { color: var(--c-invalid); }
+
+.ctl-field select,
+.ctl-field input[type='number'] {
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  font: 0.9rem var(--font-mono);
+}
+
+/* On phones a tall control panel scrolls instead of covering the whole model. */
+@media (max-width: 639px) {
+  .scene-controls {
+    max-height: 46%;
+    overflow-y: auto;
+    padding: 8px 10px;
+  }
 }

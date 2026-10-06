@@ -1,11 +1,11 @@
 export type Lang = 'en' | 'tr';
 export type Level = 'beginner' | 'intermediate' | 'expert';
 export type ThemeName = 'light' | 'dark';
-export type ChapterId = 'basics' | 'consensus' | 'l1' | 'dapps';
+export type ChapterId = 'basics' | 'consensus' | 'l1' | 'dapps' | 'defi';
 
 export const LANGS: Lang[] = ['en', 'tr'];
 export const LEVELS: Level[] = ['beginner', 'intermediate', 'expert'];
-export const CHAPTERS: ChapterId[] = ['basics', 'consensus', 'l1', 'dapps'];
+export const CHAPTERS: ChapterId[] = ['basics', 'consensus', 'l1', 'dapps', 'defi'];
 
 export const isLang = (v: unknown): v is Lang => v === 'en' || v === 'tr';
 export const isLevel = (v: unknown): v is Level =>

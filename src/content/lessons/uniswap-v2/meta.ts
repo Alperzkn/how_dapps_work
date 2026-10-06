@@ -2,7 +2,7 @@ import type { LessonMeta } from '../../../types';
 
 const meta: LessonMeta = {
   id: 'uniswap-v2',
-  chapter: 'dapps',
+  chapter: 'defi',
   title: { en: 'Uniswap v2', tr: 'Uniswap v2' },
   summary: {
     en: 'An exchange with no order book: two tokens in a pool and one formula that sets the price.',

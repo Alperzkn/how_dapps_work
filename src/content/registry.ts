@@ -3,17 +3,26 @@ import type { SceneModule, StepView } from '../scene/types';
 
 /** Reading order. A lesson appears in the app once its files exist. */
 export const LESSON_ORDER = [
+  // Blockchain basics
   'blockchain',
   'transactions',
   'network',
+  // Consensus
   'pow',
   'pos',
+  // Chains: L1 and L2
   'btc-vs-eth',
   'other-l1s',
+  'layer2',
+  // Smart contracts and dapps
+  'smart-contracts',
+  'tokens',
   'dapp',
+  // Uniswap and DeFi
   'uniswap-v2',
   'uniswap-v3',
   'uniswap-v4',
+  'mev',
 ];
 
 export interface LessonEntry {
