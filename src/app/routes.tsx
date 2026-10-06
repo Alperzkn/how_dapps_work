@@ -1,14 +1,17 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect } from 'react';
 import { Navigate, Outlet, Route, Routes, useParams } from 'react-router-dom';
-import { GlossaryPage } from '../glossary/GlossaryPage';
-import { TermDialog } from '../glossary/TermDialog';
-import { LessonPage } from '../lesson/LessonPage';
 import { useStore } from '../state/store';
 import { applyTheme } from '../theme/applyTheme';
 import { isLang } from '../types';
 import { HomePage } from './HomePage';
 import { NotFound } from './NotFound';
 import { TopBar } from './TopBar';
+
+// The lesson page pulls in three.js; keep it out of the first load.
+const LessonPage = lazy(() => import('../lesson/LessonPage').then((m) => ({ default: m.LessonPage })));
+// The glossary text is only needed once a term can be opened.
+const TermDialog = lazy(() => import('../glossary/TermDialog').then((m) => ({ default: m.TermDialog })));
+const GlossaryPage = lazy(() => import('../glossary/GlossaryPage').then((m) => ({ default: m.GlossaryPage })));
 
 /** The language in the URL is the source of truth; an unknown one redirects to the stored language. */
 function LangShell() {
@@ -18,7 +21,8 @@ function LangShell() {
   const theme = useStore((s) => s.theme);
   const valid = isLang(lang);
 
-  useEffect(() => {
+  // Before paint, so a deep link in the other language never flashes the stored one.
+  useLayoutEffect(() => {
     if (valid && lang !== stored) setLang(lang);
   }, [valid, lang, stored, setLang]);
   useEffect(() => {
@@ -27,15 +31,17 @@ function LangShell() {
   useEffect(() => applyTheme(theme), [theme]);
 
   if (!valid) return <Navigate to={`/${stored}`} replace />;
-  // Render with the URL language even before the store catches up.
-  if (lang !== stored) return null;
   return (
     <div className="app">
       <TopBar />
       <main className="app-main">
-        <Outlet />
+        <Suspense fallback={null}>
+          <Outlet />
+        </Suspense>
       </main>
-      <TermDialog />
+      <Suspense fallback={null}>
+        <TermDialog />
+      </Suspense>
     </div>
   );
 }

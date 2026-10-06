@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { glossaryList } from '../content/glossary';
 import { lessonById, lessons } from '../content/registry';
 import { ui } from '../i18n/ui';
 import { useStore } from '../state/store';
@@ -54,7 +53,7 @@ export function HomePage() {
           <div className="hero-actions">
             {resume ? (
               <Link className="btn btn-primary" to={lessonPath(lang, resume.meta.id, last.step, level)}>
-                {ui(lang, 'continue')}: {resume.content[lang].title}
+                {ui(lang, 'continue')}: {resume.meta.title[lang]}
               </Link>
             ) : (
               first && (
@@ -64,7 +63,7 @@ export function HomePage() {
               )
             )}
             <Link className="btn" to={`/${lang}/glossary`}>
-              {ui(lang, 'glossary')} · {glossaryList.length} {ui(lang, 'termCount')}
+              {ui(lang, 'glossary')}
             </Link>
           </div>
         </div>

@@ -65,7 +65,7 @@ export function TermDialog() {
                     <p className="term-lesson">
                       {ui(lang, 'learnIn')}:{' '}
                       <Link to={lessonPath(lang, lesson.meta.id, 0, level)} onClick={close}>
-                        {lesson.content[lang].title}
+                        {lesson.meta.title[lang]}
                       </Link>
                     </p>
                   )}

@@ -66,7 +66,7 @@ export function liquidityForValue(value: number, p: number, pa: number, pb: numb
 export function capitalEfficiency(p: number, pa: number, pb: number): number {
   const price = pos(p);
   const [a, b] = range(pa, pb);
-  if (price === 0 || a === 0 || a === b || price <= a || price >= b) return 1;
+  if (price === 0 || a === 0 || a === b || !inRange(price, a, b)) return 1;
   const sp = Math.sqrt(price);
   const v3 = 2 * sp - Math.sqrt(a) - price / Math.sqrt(b);
   return v3 > 0 ? (2 * sp) / v3 : 1;

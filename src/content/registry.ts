@@ -18,26 +18,30 @@ export const LESSON_ORDER = [
 
 export interface LessonEntry {
   meta: LessonMeta;
-  content: Record<Lang, LessonContent>;
   views: Record<string, StepView>;
+  /** Lesson text is loaded per lesson and language, so the home page stays small. */
+  loadContent: (lang: Lang) => Promise<LessonContent>;
   load: () => Promise<SceneModule>;
 }
 
+type Loader<T> = (() => Promise<T>) | undefined;
+
 const metas = import.meta.glob<{ default: LessonMeta }>('./lessons/*/meta.ts', { eager: true });
-const en = import.meta.glob<{ default: LessonContent }>('./lessons/*/en.ts', { eager: true });
-const tr = import.meta.glob<{ default: LessonContent }>('./lessons/*/tr.ts', { eager: true });
+const texts: Record<string, Loader<{ default: LessonContent }>> = import.meta.glob<{ default: LessonContent }>('./lessons/*/{en,tr}.ts');
 const views = import.meta.glob<{ views: Record<string, StepView> }>('../scenes/*/views.ts', {
   eager: true,
 });
-const scenes: Record<string, (() => Promise<SceneModule>) | undefined> = import.meta.glob<SceneModule>('../scenes/*/Scene.tsx');
+const scenes: Record<string, Loader<SceneModule>> = import.meta.glob<SceneModule>('../scenes/*/Scene.tsx');
 
 export const lessons: LessonEntry[] = LESSON_ORDER.flatMap((id) => {
   const meta = metas[`./lessons/${id}/meta.ts`]?.default;
-  const e = en[`./lessons/${id}/en.ts`]?.default;
-  const t = tr[`./lessons/${id}/tr.ts`]?.default;
+  const en = texts[`./lessons/${id}/en.ts`];
+  const tr = texts[`./lessons/${id}/tr.ts`];
   const v = views[`../scenes/${id}/views.ts`]?.views;
   const load = scenes[`../scenes/${id}/Scene.tsx`];
-  return meta && e && t && v && load ? [{ meta, content: { en: e, tr: t }, views: v, load }] : [];
+  if (!meta || !en || !tr || !v || !load) return [];
+  const loadContent = (lang: Lang) => (lang === 'tr' ? tr : en)().then((m) => m.default);
+  return [{ meta, views: v, loadContent, load }];
 });
 
 export const lessonById: Record<string, LessonEntry> = Object.fromEntries(

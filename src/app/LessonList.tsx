@@ -23,7 +23,6 @@ export function LessonList({ compact = false }: { compact?: boolean }) {
             <h2>{ui(lang, `chapter.${chapter}`)}</h2>
             <ol>
               {items.map((l) => {
-                const c = l.content[lang];
                 const done = completed.includes(l.meta.id);
                 return (
                   <li key={l.meta.id}>
@@ -32,8 +31,8 @@ export function LessonList({ compact = false }: { compact?: boolean }) {
                         {done ? <IconCheck /> : lessons.indexOf(l) + 1}
                       </span>
                       <span className="lesson-card-text">
-                        <strong>{c.title}</strong>
-                        {!compact && <span>{c.summary}</span>}
+                        <strong>{l.meta.title[lang]}</strong>
+                        {!compact && <span>{l.meta.summary[lang]}</span>}
                       </span>
                       {done && <span className="sr-only">{ui(lang, 'done')}</span>}
                     </Link>

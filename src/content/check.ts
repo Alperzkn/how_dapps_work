@@ -1,7 +1,11 @@
 import { extractTermIds } from '../glossary/parseMarkup';
-import { LANGS, LEVELS, type LessonContent } from '../types';
+import { LANGS, LEVELS, type Lang, type LessonContent } from '../types';
 import { glossary, glossaryList } from './glossary';
 import { LESSON_ORDER, lessonById } from './registry';
+
+// The check reads every lesson text at once; the app itself loads them on demand.
+const texts = import.meta.glob<{ default: LessonContent }>('./lessons/*/{en,tr}.ts', { eager: true });
+const textOf = (id: string, lang: Lang) => texts[`./lessons/${id}/${lang}.ts`]?.default;
 
 const sameKeys = (a: string[], b: string[]) =>
   a.length === b.length && [...a].sort().join('|') === [...b].sort().join('|');
@@ -21,7 +25,8 @@ export function checkContent(): string[] {
       problems.push(`lesson ${id}: missing (needs meta.ts, en.ts, tr.ts, views.ts, Scene.tsx)`);
       continue;
     }
-    const { meta, content, views } = lesson;
+    const { meta, views } = lesson;
+    const content = { en: textOf(id, 'en'), tr: textOf(id, 'tr') };
     if (meta.id !== id) problems.push(`lesson ${id}: meta.id is "${meta.id}"`);
     if (new Set(meta.steps).size !== meta.steps.length) problems.push(`lesson ${id}: duplicate step ids`);
     if (!sameKeys(Object.keys(views), meta.steps)) {
@@ -30,7 +35,7 @@ export function checkContent(): string[] {
     for (const lang of LANGS) {
       const c: LessonContent = content[lang];
       const at = `lesson ${id} [${lang}]`;
-      if (!c.title?.trim() || !c.summary?.trim()) problems.push(`${at}: missing title or summary`);
+      if (!meta.title?.[lang]?.trim() || !meta.summary?.[lang]?.trim()) problems.push(`${at}: missing title or summary`);
       if (!sameKeys(Object.keys(c.steps), meta.steps)) {
         problems.push(`${at}: step ids do not match meta.steps`);
       }

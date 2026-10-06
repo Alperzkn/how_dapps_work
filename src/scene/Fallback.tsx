@@ -18,7 +18,7 @@ export function Fallback({ lessonId, stepId, alt, note, retryLabel, onRetry }: P
       {broken ? (
         <p className="scene-fallback-alt">{alt}</p>
       ) : (
-        <img src={`./fallback/${lessonId}/${stepId}.png`} alt={alt} onError={() => setBroken(true)} />
+        <img src={`./fallback/${lessonId}/${stepId}.jpg`} alt={alt} onError={() => setBroken(true)} />
       )}
       <p className="scene-fallback-note">
         {note}

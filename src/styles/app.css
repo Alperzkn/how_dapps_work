@@ -388,7 +388,7 @@ button {
     animation: fade 0.15s ease-out;
   }
   .term-dialog:not([data-expanded]) .term-long {
-    display: block;
+    display: grid;
   }
   .term-more {
     display: none;
@@ -984,6 +984,11 @@ html[data-present] .topbar {
 
 .lesson[data-present] .lesson-text {
   display: none;
+}
+
+/* Leave room for the caption so it never covers the model. */
+.lesson[data-present] .scene-canvas {
+  bottom: 140px;
 }
 
 /* ---------- Home ---------- */

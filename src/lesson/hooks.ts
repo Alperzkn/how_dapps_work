@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { LessonEntry } from '../content/registry';
 import type { SceneModule } from '../scene/types';
+import type { Lang, LessonContent } from '../types';
 
 export function useReducedMotion(): boolean {
   const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -57,4 +58,29 @@ export function swipeHandlers(onSwipe: (dir: 1 | -1) => void) {
       if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.8) onSwipe(dx < 0 ? 1 : -1);
     },
   };
+}
+
+type Text = { id: string; lang: Lang; content: LessonContent };
+
+/**
+ * Loads a lesson's text for a language. While another language of the same
+ * lesson is loading, the previous one stays on screen so the page does not blank.
+ */
+export function useLessonContent(lesson: LessonEntry | undefined, lang: Lang): LessonContent | null {
+  const [text, setText] = useState<Text | null>(null);
+  const id = lesson?.meta.id ?? '';
+
+  useEffect(() => {
+    if (!lesson) return;
+    let live = true;
+    lesson
+      .loadContent(lang)
+      .then((content) => live && setText({ id, lang, content }))
+      .catch((error) => console.error('Lesson text failed to load', error));
+    return () => {
+      live = false;
+    };
+  }, [lesson, id, lang]);
+
+  return text && text.id === id ? text.content : null;
 }

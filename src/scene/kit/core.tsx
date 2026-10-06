@@ -90,6 +90,8 @@ export function Mat({ color, glow = false, opacity = 1 }: MatProps) {
   const { colors, glow: amount } = useScene();
   return (
     <meshStandardMaterial
+      // three.js needs a fresh material when transparency is switched on or off.
+      key={opacity < 1 ? 'clear' : 'solid'}
       color={colors[color]}
       roughness={0.85}
       metalness={0}

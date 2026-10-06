@@ -14,7 +14,7 @@ import { SceneCanvas, hasWebGL } from '../scene/SceneCanvas';
 import type { SceneProps } from '../scene/types';
 import { useStore } from '../state/store';
 import { LEVELS, type Level } from '../types';
-import { swipeHandlers, useReducedMotion, useSceneModule } from './hooks';
+import { swipeHandlers, useLessonContent, useReducedMotion, useSceneModule } from './hooks';
 import { LevelSwitch } from './LevelSwitch';
 import { StepControls } from './StepControls';
 
@@ -45,6 +45,7 @@ export function LessonPage() {
   const stepCount = lesson?.meta.steps.length ?? 1;
   const { stepIndex, level } = parseLessonRoute(step, search.get('level'), stepCount, storedLevel);
   const { mod, failed, attempt, retry } = useSceneModule(lesson);
+  const content = useLessonContent(lesson, lang);
 
   const [present, setPresent] = useState(false);
   const [resetKey, setResetKey] = useState(0);
@@ -84,8 +85,12 @@ export function LessonPage() {
     return () => document.documentElement.removeAttribute('data-present');
   }, [present]);
 
+  // One listener that always reads the latest values, so a quick second key press is never handled with stale state.
+  const live = useRef({ go, changeLevel, stepIndex, present, level, termOpen });
+  live.current = { go, changeLevel, stepIndex, present, level, termOpen };
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      const { go, changeLevel, stepIndex, present, level, termOpen } = live.current;
       if (termOpen || e.metaKey || e.ctrlKey || e.altKey) return;
       const el = e.target as HTMLElement;
       if (el.closest('input, textarea, select, [role="dialog"]')) return;
@@ -99,13 +104,13 @@ export function LessonPage() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [go, changeLevel, stepIndex, present, level, termOpen]);
+  }, []);
 
   const swipe = useMemo(() => swipeHandlers((dir) => go(stepIndex + dir)), [go, stepIndex]);
 
   if (!lesson) return <NotFound />;
+  if (!content) return <p className="scene-loading">{ui(lang, 'sceneLoading')}</p>;
 
-  const content = lesson.content[lang];
   const stepId = lesson.meta.steps[stepIndex];
   const stepContent = content.steps[stepId];
   const view = lesson.views[stepId];
@@ -124,7 +129,8 @@ export function LessonPage() {
     <div className="lesson" data-present={present || undefined}>
       <section className="lesson-scene" aria-label={stepContent.alt}>
         {noGl ? (
-          fallback(ui(lang, 'sceneUnavailable'), false)
+          // A lost context can often be recreated; a device without WebGL cannot.
+          fallback(ui(lang, 'sceneUnavailable'), lost)
         ) : failed ? (
           fallback(ui(lang, 'sceneError'), true)
         ) : Scene ? (
@@ -170,7 +176,7 @@ export function LessonPage() {
       <section className="lesson-text" ref={textRef} {...swipe}>
         <header className="lesson-head">
           <p className="crumbs">
-            {ui(lang, `chapter.${lesson.meta.chapter}`)} · {content.title}
+            {ui(lang, `chapter.${lesson.meta.chapter}`)} · {lesson.meta.title[lang]}
           </p>
           <LevelSwitch lang={lang} level={level} onChange={changeLevel} />
         </header>
@@ -190,7 +196,7 @@ export function LessonPage() {
           {isLast &&
             (next ? (
               <Link className="btn btn-primary next-lesson" to={lessonPath(lang, next.meta.id, 0, level)}>
-                {ui(lang, 'nextLesson')}: {next.content[lang].title}
+                {ui(lang, 'nextLesson')}: {next.meta.title[lang]}
               </Link>
             ) : (
               <p className="next-lesson">

@@ -82,13 +82,16 @@ export function SceneCanvas(props: Props) {
       <Canvas
         orthographic
         flat
-        shadows={compact ? false : 'soft'}
+        shadows={compact ? false : 'percentage'}
         dpr={[1, compact ? 1.5 : 2]}
         frameloop={active ? 'demand' : 'never'}
         camera={{ position: ISO_OFFSET.toArray(), zoom: 40, near: 0.1, far: 200 }}
         gl={{ antialias: true, alpha: true }}
         onCreated={({ gl }) => {
-          gl.domElement.addEventListener('webglcontextlost', onContextLost);
+          // A canvas being torn down (lesson change) also loses its context; only a live one counts.
+          gl.domElement.addEventListener('webglcontextlost', () => {
+            if (gl.domElement.isConnected) onContextLost();
+          });
         }}
       >
         <ambientLight intensity={t.ambient} />

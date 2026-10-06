@@ -1,8 +1,6 @@
 import type { LessonContent } from '../../../types';
 
 const content: LessonContent = {
-  title: 'What is a blockchain?',
-  summary: 'A shared record that everyone can check and nobody can quietly rewrite.',
   labels: {
     sharedLedger: 'Shared ledger',
     copy: 'own copy',

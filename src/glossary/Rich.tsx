@@ -8,14 +8,21 @@ import { useTermStore } from './termStore';
 /** Markup as plain text, for tooltips and captions. */
 export function plainText(text: string, lang: Lang): string {
   return parseInline(text)
-    .map((n) => (n.t === 'term' ? termText(n.shown ?? glossary[n.id]?.name ?? n.id, lang) : n.v))
+    .map((n) => {
+      if (n.t === 'term') {
+        const label = n.shown ?? glossary[n.id]?.name ?? n.id;
+        return glossary[n.id]?.proper ? label : termText(label, lang);
+      }
+      return n.t === 'bold' || n.t === 'em' ? plainText(n.v, lang) : n.v;
+    })
     .join('');
 }
 
 function Term({ id, shown, lang, nested }: { id: string; shown?: string; lang: Lang; nested: boolean }) {
   const term = glossary[id];
   const open = useTermStore((s) => (nested ? s.push : s.open));
-  const text = termText(shown ?? term?.name ?? id, lang);
+  const label = shown ?? term?.name ?? id;
+  const text = term?.proper ? label : termText(label, lang);
   if (!term) return <span>{text}</span>;
   const button = (
     <button type="button" className="term" onClick={() => open(id)}>
@@ -42,8 +49,9 @@ function Inlines({ nodes, lang, nested }: { nodes: Inline[]; lang: Lang; nested:
     <>
       {nodes.map((n, i) => {
         if (n.t === 'term') return <Term key={i} id={n.id} shown={n.shown} lang={lang} nested={nested} />;
-        if (n.t === 'bold') return <strong key={i}>{n.v}</strong>;
-        if (n.t === 'em') return <em key={i}>{n.v}</em>;
+        // Bold and italic text may itself contain terms or code.
+        if (n.t === 'bold') return <strong key={i}><Inlines nodes={parseInline(n.v)} lang={lang} nested={nested} /></strong>;
+        if (n.t === 'em') return <em key={i}><Inlines nodes={parseInline(n.v)} lang={lang} nested={nested} /></em>;
         if (n.t === 'code') return <code key={i}>{n.v}</code>;
         return <Fragment key={i}>{n.v}</Fragment>;
       })}

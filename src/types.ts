@@ -14,6 +14,9 @@ export const isLevel = (v: unknown): v is Level =>
 export interface LessonMeta {
   id: string;
   chapter: ChapterId;
+  /** Shown in menus and on the home page, so it loads with the app rather than with the lesson text. */
+  title: Record<Lang, string>;
+  summary: Record<Lang, string>;
   /** Ordered step ids. */
   steps: string[];
 }
@@ -29,8 +32,6 @@ export interface StepContent {
 }
 
 export interface LessonContent {
-  title: string;
-  summary: string;
   steps: Record<string, StepContent>;
   /** Strings used inside the scene and its controls. */
   labels: Record<string, string>;
@@ -42,6 +43,8 @@ export interface GlossaryTerm {
   id: string;
   /** Canonical English name; shown untranslated in both languages. */
   name: string;
+  /** A proper noun (Bitcoin, Uniswap): shown without quotes in Turkish. */
+  proper?: boolean;
   category: TermCategory;
   related: string[];
   lesson: string;

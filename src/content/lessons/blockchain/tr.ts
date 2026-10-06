@@ -5,8 +5,6 @@ import type { LessonContent } from '../../../types';
 // English technical words without a glossary entry are quoted by hand: "light client".
 
 const content: LessonContent = {
-  title: '"Blockchain" nedir?',
-  summary: 'Herkesin kontrol edebildiği, kimsenin gizlice değiştiremediği ortak bir kayıt.',
   labels: {
     sharedLedger: 'Ortak defter',
     copy: 'kendi kopyası',

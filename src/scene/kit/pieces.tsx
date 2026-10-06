@@ -1,5 +1,6 @@
 import { Line } from '@react-three/drei';
-import { useMemo, useRef, type ReactNode } from 'react';
+import { useThree } from '@react-three/fiber';
+import { useEffect, useMemo, useRef, type ReactNode } from 'react';
 import { CatmullRomCurve3, Group, Quaternion, Vector3 } from 'three';
 import type { ColorKey } from '../../theme/tokens';
 import { useScene } from '../context';
@@ -258,16 +259,21 @@ interface MoverProps {
 export function Mover({ path, duration = 2, delay = 0, loop = true, arc = 0, playing = true, children }: MoverProps) {
   const ref = useRef<Group>(null);
   const start = useRef<number | null>(null);
+  const invalidate = useThree((s) => s.invalidate);
   const pts = useMemo(() => path.map((p) => new Vector3(...p)), [path]);
+  // At rest the child sits at the start of the path and no frames are requested.
+  useEffect(() => {
+    if (playing) return;
+    start.current = null;
+    if (ref.current) {
+      ref.current.position.copy(pts[0]);
+      ref.current.visible = true;
+    }
+    invalidate();
+  }, [playing, pts, invalidate]);
   useLoop((time) => {
     const g = ref.current;
     if (!g) return;
-    if (!playing) {
-      start.current = null;
-      g.position.copy(pts[0]);
-      g.visible = true;
-      return;
-    }
     start.current ??= time;
     const local = time - start.current - delay;
     if (local < 0) {
@@ -282,7 +288,7 @@ export function Mover({ path, duration = 2, delay = 0, loop = true, arc = 0, pla
     const e = f * f * (3 - 2 * f);
     g.position.lerpVectors(pts[seg], pts[seg + 1], e);
     g.position.y += Math.sin(e * Math.PI) * arc;
-  });
+  }, playing);
   return (
     <group ref={ref} position={path[path.length - 1]}>
       {children}

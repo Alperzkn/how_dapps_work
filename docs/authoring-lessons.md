@@ -5,7 +5,7 @@ registry and glossary pick files up by path. Use lesson `blockchain` as the
 reference for every file shape.
 
 ```
-src/content/lessons/<id>/meta.ts     id, chapter, ordered step ids
+src/content/lessons/<id>/meta.ts     id, chapter, title + summary (en, tr), ordered step ids
 src/content/lessons/<id>/en.ts       LessonContent (English)
 src/content/lessons/<id>/tr.ts       LessonContent (Turkish)
 src/scenes/<id>/views.ts             camera view per step id

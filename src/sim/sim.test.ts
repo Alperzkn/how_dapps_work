@@ -112,6 +112,9 @@ describe('uniswap v3', () => {
     expect(capitalEfficiency(2000, 2000 / 1.1025, 2000 * 1.1025)).toBeCloseTo(21, 6);
     expect(capitalEfficiency(1, 0.5, 2)).toBeCloseTo(1 / (1 - Math.SQRT1_2), 6);
     expect(capitalEfficiency(1, 1e-12, 1e12)).toBeCloseTo(1, 4);
+    // The lower bound itself is in range (as in the contracts), so it is not treated as unusable.
+    expect(capitalEfficiency(1, 1, 4)).toBeCloseTo(4, 9);
+    expect(capitalEfficiency(4, 1, 4)).toBe(1);
   });
 
   it('is consistent: the liquidity bought for a value is worth that value', () => {
